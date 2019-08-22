@@ -38,9 +38,11 @@ namespace MailConsole
                     string mailBody = "";
                     string type = "";
                     string recevicer = "";
+                    string stop = "";
+
                     try
                     {
-                        ocmd = new OracleCommand(@"select type from sys_rules_testrun where guid='" + value.GUID + "'",conn);
+                        ocmd = new OracleCommand(@"select type from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         type = ocmd.ExecuteScalar()?.ToString();
 
                         ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
@@ -51,6 +53,24 @@ namespace MailConsole
                     {
                         FileLog.WriteLog(ex.Message + ex.StackTrace);
                     }
+
+                    FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
+                    if (value.ISSTOP.ToString() == "1")
+                    {
+                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                        Hashtable pars = new Hashtable();
+                        pars["key"] = Webkey();
+                        pars["userId"] = "shuxi";
+                        pars["eqptId"] = value.EQPTID;
+                        pars["type"] = type;
+                        pars["lotId"] = "";
+                        pars["Formname"] = "";
+                        pars["Stepname"] = "";
+                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                        stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                        FileLog.WriteLog("PRR停机返回值:" + stop);
+                    }
+
                     try
                     {
                         MailSender mail = new MailSender();
@@ -224,6 +244,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         FileLog.WriteLog(ex.Message + ex.StackTrace);
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -246,6 +267,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     string mailBody = "";
                     string type = "";
                     string recevicer = "";
+                    string stop = "";
 
                     try
                     {
@@ -259,6 +281,24 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     {
                         FileLog.WriteLog(ex.Message + ex.StackTrace);
                     }
+
+                    FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
+                    if (value.ISSTOP.ToString() == "1")
+                    {
+                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                        Hashtable pars = new Hashtable();
+                        pars["key"] = Webkey();
+                        pars["userId"] = "shuxi";
+                        pars["eqptId"] = value.EQPTID;
+                        pars["type"] = type;
+                        pars["lotId"] = "";
+                        pars["Formname"] = "";
+                        pars["Stepname"] = "";
+                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                        stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                        FileLog.WriteLog("PRR停机返回值:" + stop);
+                    }
+
                     try
                     {
                         MailSender mail = new MailSender();
@@ -451,7 +491,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 var value = JToken.Parse(result).ToObject<dynamic>();
                 try
                 {
-                    ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where upper(product)=upper('" + value.device + "') group by mail_list", conn);
+                    ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where upper(product)=upper('" + value.DEVICE + "') group by mail_list", conn);
                     recevicer = ocmd.ExecuteScalar()?.ToString();
                 }
                 catch (Exception ex)
@@ -474,13 +514,18 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     MailSender mail = new MailSender();
                     recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jiangtao@cj-elec.com;" + recevicer;
                     //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
+                    //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
-                    mailTitle = "ECID测试邮件";
 
-                    string b = "<br/><br/>停机触发传入值：<br/>" + "key：" + Webkey() + "<br/>eqptId：" + value.eqptid;
-                    mailBody = result + b + "<br/><br/>停机接口返回值：<br/>" + "";
+                    mailTitle = "StopHandler_ECID_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+
+                    mailBody = value.DATETIME + ",StopHandler" + "<br/>";
+                    mailBody += "[ECID|JCET_ECID_" + value.PARTTYP + "]" + "<br/>";
+                    mailBody += value.RESULT + "<br/>";
+                    mailBody += value.REFS;
                     mail.Send(mailTitle, mailBody);
+
                 }
                 catch (Exception ex)
                 {
@@ -553,6 +598,9 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             public string DATETIME { get; set; }
             public string SITENUM { get; set; }
             public string REMARK { get; set; }
+            public string EQPTID { get; set; }
+            public string ISSTOP { get; set; }
+
         }
 
         public class PTR_RESULT
@@ -563,6 +611,9 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             public string DATETIME { get; set; }
             public string SITENUM { get; set; }
             public string REMARK { get; set; }
+            public string EQPTID { get; set; }
+            public string ISSTOP { get; set; }
+
         }
     }
 }

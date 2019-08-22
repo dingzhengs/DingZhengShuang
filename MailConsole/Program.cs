@@ -39,11 +39,11 @@ namespace MailConsole
                     Console.WriteLine("PRR：" + msg);
                 });
 
-                //redis.Subscribe("ECID", msg =>
-                //{
-                //    mail6.ecidRulseMailAlert(msg);
-                //    Console.WriteLine("ECID：" + msg);
-                //});
+                redis.Subscribe("ECID", msg =>
+                {
+                    mail6.ecidRulseMailAlert(msg);
+                    Console.WriteLine("ECID：" + msg);
+                });
 
                 Console.ReadKey();
             }
@@ -52,6 +52,20 @@ namespace MailConsole
                 FileLog.WriteLog("邮件发送异常:" + ex.Message.ToString());
                 FileLog.WriteLog("邮件发送失败！");
             }
+        }
+
+        public string Webkey()
+        {
+            //string datatime = sqlHelper.ExecuteScalar("").ToString();
+            //string datatime = OraDBUtility.ExecuteScalar(CommandType.Text, "select to_char(sysdate,'YYYY-MM-DD') from dual", null).ToString();
+            string value = "JCET" + DateTime.Now.ToString("yyyy-MM-dd");
+            //string value = "JCET" + datatime;
+            if (value == null || value == "")
+            {
+                return "";
+            }
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            return Convert.ToBase64String(bytes);
         }
     }
 }

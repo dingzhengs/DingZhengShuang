@@ -31,19 +31,19 @@ namespace MailService
                 redis.Subscribe("PRR", msg =>
                 {
                     mail6.prrRulseMailAlert(msg);
-                    FileLog.WriteLog("PRR：" + msg);
+                    //FileLog.WriteLog("PRR：" + msg);
                 });
 
                 redis.Subscribe("PTR", msg =>
                 {
                     mail6.ptrRulseMailAlert(msg);
-                    FileLog.WriteLog("PTR：" + msg);
+                    //FileLog.WriteLog("PTR：" + msg);
                 });
 
                 redis.Subscribe("ECID", msg =>
                 {
                     mail6.ecidRulseMailAlert(msg);
-                    FileLog.WriteLog("ECID：" + msg);
+                    //FileLog.WriteLog("ECID：" + msg);
                 });
 
                 redis.Subscribe("ECIDWAFER", msg =>
