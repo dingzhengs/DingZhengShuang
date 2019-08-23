@@ -39,6 +39,7 @@ namespace MailConsole
                     string type = "";
                     string recevicer = "";
                     string stop = "";
+                    string unlockrole = "";
 
                     try
                     {
@@ -47,6 +48,9 @@ namespace MailConsole
 
                         ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         recevicer = ocmd.ExecuteScalar()?.ToString();
+
+                        ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        unlockrole = ocmd.ExecuteScalar()?.ToString();
 
                     }
                     catch (Exception ex)
@@ -69,6 +73,22 @@ namespace MailConsole
                         FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
                         stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                         FileLog.WriteLog("PRR停机返回值:" + stop);
+
+                        //锁机成功插入数据，方便前台解锁
+                        if (stop.Contains("Y"))
+                        {
+                            try
+                            {
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                            }
+                        }
                     }
 
                     try
@@ -268,6 +288,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     string type = "";
                     string recevicer = "";
                     string stop = "";
+                    string unlockrole = "";
 
                     try
                     {
@@ -276,6 +297,9 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
                         ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         recevicer = ocmd.ExecuteScalar()?.ToString();
+
+                        ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        unlockrole = ocmd.ExecuteScalar()?.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -297,6 +321,22 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
                         stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                         FileLog.WriteLog("PRR停机返回值:" + stop);
+                    }
+
+                    //锁机成功插入数据，方便前台解锁
+                    if (stop.Contains("Y"))
+                    {
+                        try
+                        {
+                            FileLog.WriteLog("---触发插表---");
+                            ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0')", conn);
+                            int res = ocmd.ExecuteNonQuery();
+                            FileLog.WriteLog("插库反馈：" + res);
+                        }
+                        catch (Exception ex)
+                        {
+                            FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                        }
                     }
 
                     try
@@ -488,26 +528,51 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
+                string unlockrole = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
+
                 try
                 {
                     ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where upper(product)=upper('" + value.DEVICE + "') group by mail_list", conn);
                     recevicer = ocmd.ExecuteScalar()?.ToString();
+
+                    ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where upper(product)=upper('" + value.DEVICE + "') group by unlockrole", conn);
+                    unlockrole = ocmd.ExecuteScalar()?.ToString();
                 }
                 catch (Exception ex)
                 {
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
-                //Hashtable pars = new Hashtable();
-                //pars["key"] = Webkey();
-                //pars["userId"] = "shuxi";
-                //pars["eqptId"] = value.eqptid;
-                //pars["type"] = "test_info";
-                //pars["lotId"] = value.lotid;
-                //pars["Formname"] = "";
-                //pars["Stepname"] = "";
-                ////string a = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim_test/Service1.asmx/lockEqptByTypeWithkey", pars);
-                //string a = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                Hashtable pars = new Hashtable();
+                pars["key"] = Webkey();
+                pars["userId"] = "shuxi";
+                pars["eqptId"] = value.EQPTID;
+                pars["type"] = "ECID";
+                pars["lotId"] = "";
+                pars["Formname"] = "";
+                pars["Stepname"] = "";
+                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                FileLog.WriteLog("ECID停机返回值:" + stop);
+
+                //锁机成功插入数据，方便前台解锁
+                if (stop.Contains("Y"))
+                {
+                    try
+                    {
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','ECID','{unlockrole}','0')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                    }
+                }
+
                 try
                 {
 
@@ -531,6 +596,25 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 {
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
+            }
+        }
+
+        public void unlock(UNLOCK_EQPT unlock_eqpt)
+        {
+            Hashtable pars = new Hashtable();
+            pars["key"] = Webkey();
+            pars["userId"] = unlock_eqpt.USERID;
+            pars["eqptId"] = unlock_eqpt.EQPTID;
+            pars["type"] = unlock_eqpt.TYPE;
+            pars["lotId"] = "";
+            pars["Formname"] = "";
+            pars["Stepname"] = "";
+            string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/releaseEqptByTypeWithkey", pars);
+
+            //锁机成功插入数据，方便前台解锁
+            if (stop.Contains("Y"))
+            {
+                string update_sql = @"update UNLOCK_EQPT set STATUS=1,UPDATEUSER='登录默认人',UPDATEDATE=sysdate where guid='" + unlock_eqpt.GUID + "'";
             }
         }
 
@@ -601,6 +685,20 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             public string EQPTID { get; set; }
             public string ISSTOP { get; set; }
 
+        }
+
+        public class UNLOCK_EQPT
+        {
+            public string GUID { get; set; }
+            public string EQPNAME { get; set; }
+            public string WEBKEY { get; set; }
+            public string USERID { get; set; }
+            public string EQPTID { get; set; }
+            public string TYPE { get; set; }
+            public string ULOCKROLE { get; set; }
+            public string UPDATEUSER { get; set; }
+            public DateTime? UPDATEDATE { get; set; }
+            public string STATUS { get; set; }
         }
 
         public class PTR_RESULT
