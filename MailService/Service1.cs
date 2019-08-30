@@ -42,14 +42,14 @@ namespace MailService
 
                 redis.Subscribe("ECID", msg =>
                 {
-                    mail6.ecidRulseMailAlert(msg);
-                    //FileLog.WriteLog("ECID：" + msg);
+                    //mail6.ecidRulseMailAlert(msg);
+                    FileLog.WriteLog("ECID：" + msg);
                 });
 
                 redis.Subscribe("ECIDWAFER", msg =>
                 {
-                    //mail6.ecidRulseMailAlert(msg);
-                    FileLog.WriteLog("ECIDWAFER：" + msg);
+                    mail6.ecidWaferRulseMailAlert(msg);
+                    //FileLog.WriteLog("ECIDWAFER：" + msg);
                 });
 
             }
