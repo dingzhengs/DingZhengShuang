@@ -86,7 +86,7 @@ namespace MailConsole
                                 try
                                 {
                                     FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0')", conn);
+                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS,CREATE_DATE) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0',sysdate)", conn);
                                     int res = ocmd.ExecuteNonQuery();
                                     FileLog.WriteLog("插库反馈：" + res);
                                 }
@@ -101,7 +101,7 @@ namespace MailConsole
                     try
                     {
                         MailSender mail = new MailSender();
-                        recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jiangtao@cj-elec.com;" + recevicer;
+                        recevicer = "jiangtao@cj-elec.com;" + recevicer;
                         //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
                         //recevicer = "zhengshuang.ding@shu-xi.com";
                         //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
@@ -343,7 +343,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 try
                                 {
                                     FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0')", conn);
+                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS,CREATE_DATE) values ('{value.EQPNAME}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0',sysdate)", conn);
                                     int res = ocmd.ExecuteNonQuery();
                                     FileLog.WriteLog("插库反馈：" + res);
                                 }
@@ -358,7 +358,8 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     try
                     {
                         MailSender mail = new MailSender();
-                        recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jiangtao@cj-elec.com;" + recevicer;
+                        recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                        //recevicer = "zhengshuang.ding@shu-xi.com";
                         //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
                         //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
                         string[] recevicerList = recevicer.Split(';');
@@ -545,18 +546,14 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 string mailBody = "";
                 string recevicer = "";
                 string unlockrole = "";
-                string type = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
 
                 try
                 {
-                    ocmd = new OracleCommand(@"select type from sys_rules_testrun where guid='" + value.GUID + "'", conn);
-                    type = ocmd.ExecuteScalar()?.ToString();
-
-                    ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where upper(product)=upper('" + value.PARTTYP + "') group by mail_list", conn);
                     recevicer = ocmd.ExecuteScalar()?.ToString();
 
-                    ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where upper(product)=upper('" + value.PARTTYP + "') group by unlockrole", conn);
                     unlockrole = ocmd.ExecuteScalar()?.ToString();
                 }
                 catch (Exception ex)
@@ -564,16 +561,31 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
 
-                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                //try
+                //{
+                //    ocmd = new OracleCommand(@"select type from v_eq_rules_testrun where guid='" + value.GUID + "'", conn);
+                //    type = ocmd.ExecuteScalar()?.ToString();
+
+                //    ocmd = new OracleCommand(@"select mail_list from v_eq_rules_testrun where guid='" + value.GUID + "'", conn);
+                //    recevicer = ocmd.ExecuteScalar()?.ToString();
+
+                //    ocmd = new OracleCommand(@"select unlockrole from v_eq_rules_testrun where guid='" + value.GUID + "'", conn);
+                //    unlockrole = ocmd.ExecuteScalar()?.ToString();
+                //}
+                //catch (Exception ex)
+                //{
+                //    FileLog.WriteLog(ex.Message + ex.StackTrace);
+                //}
+
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID + "；EQPNAME：" + value.NODENAM);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
                 pars["userId"] = "shuxi";
                 pars["eqptId"] = value.EQPTID;
-                pars["type"] = type;
+                pars["type"] = "ECID";
                 pars["lotId"] = "";
                 pars["Formname"] = "";
                 pars["Stepname"] = "";
-                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
                 //string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                 //FileLog.WriteLog("ECID停机返回值:" + stop);
 
@@ -583,7 +595,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 //    try
                 //    {
                 //        FileLog.WriteLog("---触发插表---");
-                //        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.NODENAM}','{Webkey()}','shuxi','{value.EQPTID}','ECID','{unlockrole}','0')", conn);
+                //        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi','{value.EQPTID}','ECID','{unlockrole}','0',sysdate)", conn);
                 //        int res = ocmd.ExecuteNonQuery();
                 //        FileLog.WriteLog("插库反馈：" + res);
                 //    }
@@ -597,18 +609,18 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 {
 
                     MailSender mail = new MailSender();
-                    recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jiangtao@cj-elec.com;" + recevicer;
+                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
                     //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
                     //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
-                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                    mailTitle = ocmd.ExecuteScalar()?.ToString();
-                    //mailTitle = "StopHandler_ECID_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+                    //                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
+                    //from (select * from v_eq_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                    //                    mailTitle = ocmd.ExecuteScalar()?.ToString();
+                    mailTitle = "Pause Production_ECID_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
 
-                    mailBody = value.DATETIME + ",StopHandler" + "<br/>";
+                    mailBody = value.DATETIME + ",Pause Production" + "<br/>";
                     mailBody += "[ECID|JCET_ECID_" + value.PARTTYP + "]" + "<br/>";
                     mailBody += value.RESULT + "<br/>";
                     mailBody += value.REFS;
@@ -671,7 +683,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     try
                     {
                         FileLog.WriteLog("---触发插表---");
-                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS) values ('{value.NODENAM}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0')", conn);
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0',sysdate)", conn);
                         int res = ocmd.ExecuteNonQuery();
                         FileLog.WriteLog("插库反馈：" + res);
                     }
@@ -685,19 +697,109 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 {
 
                     MailSender mail = new MailSender();
-                    recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jiangtao@cj-elec.com;" + recevicer;
+                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
                     //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
                     //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
-                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                    mailTitle = ocmd.ExecuteScalar()?.ToString();
+                    //ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
+                    //from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                    //mailTitle = ocmd.ExecuteScalar()?.ToString();
+                    mailTitle = "Pause Production_ECIDWAFER_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
 
 
                     mailBody = value.DATETIME + ",Pause Production" + "<br/>";
-                    mailBody += "[ECID|JCET_ECID_" + value.PARTTYP + "]" + "<br/>";
+                    mailBody += "[ECIDWAFER|JCET_ECIDWAFER_" + value.PARTTYP + "]" + "<br/>";
+                    mailBody += value.REFS + "<br/>";
+                    mailBody += value.RESULT;
+                    mail.Send(mailTitle, mailBody);
+
+                }
+                catch (Exception ex)
+                {
+                    FileLog.WriteLog(ex.Message + ex.StackTrace);
+                }
+            }
+        }
+
+        public void ecidWafer_akjRulseMailAlert(string result)
+        {
+            using (OracleConnection conn = new OracleConnection(dmgr.ConnectionString))
+            {
+                conn.Open();
+                OracleCommand ocmd;
+                FileLog.WriteLog("ecidwaferakj:" + result);
+                string mailTitle = "";
+                string mailBody = "";
+                string recevicer = "";
+                string unlockrole = "";
+                string type = "";
+                var value = JToken.Parse(result).ToObject<dynamic>();
+
+                try
+                {
+                    ocmd = new OracleCommand(@"select type from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    type = ocmd.ExecuteScalar()?.ToString();
+
+                    ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    recevicer = ocmd.ExecuteScalar()?.ToString();
+
+                    ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    unlockrole = ocmd.ExecuteScalar()?.ToString();
+                }
+                catch (Exception ex)
+                {
+                    FileLog.WriteLog(ex.Message + ex.StackTrace);
+                }
+
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                Hashtable pars = new Hashtable();
+                pars["key"] = Webkey();
+                pars["userId"] = "shuxi";
+                pars["eqptId"] = value.EQPTID;
+                pars["type"] = type;
+                pars["lotId"] = "";
+                pars["Formname"] = "";
+                pars["Stepname"] = "";
+                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                FileLog.WriteLog("ECID停机返回值:" + stop);
+
+                //锁机成功插入数据，方便前台解锁
+                if (stop.Contains("Y"))
+                {
+                    try
+                    {
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi','{value.EQPTID}','{type}','{unlockrole}','0',sysdate)", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                    }
+                }
+
+                try
+                {
+
+                    MailSender mail = new MailSender();
+                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                    //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
+                    //recevicer = "zhengshuang.ding@shu-xi.com";
+                    string[] recevicerList = recevicer.Split(';');
+                    mail.AddTo(recevicerList);
+
+                    //                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
+                    //from (select * from v_eq_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                    //                    mailTitle = ocmd.ExecuteScalar()?.ToString();
+                    mailTitle = "Pause Production_ECIDWAFER-AKJ_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+
+
+                    mailBody = value.DATETIME + ",Pause Production" + "<br/>";
+                    mailBody += "[ECIDWAFER-AKJ|JCET_ECIDWAFER-AKJ_" + value.PARTTYP + "]" + "<br/>";
                     mailBody += value.REFS + "<br/>";
                     mailBody += value.RESULT;
                     mail.Send(mailTitle, mailBody);

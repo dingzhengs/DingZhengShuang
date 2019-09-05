@@ -30,19 +30,25 @@ namespace MailConsole
                 redis.Subscribe("PRR", msg =>
                 {
                     mail6.prrRulseMailAlert(msg);
-                    Console.WriteLine("PRR：" + msg);
+                    //FileLog.WriteLog("PRR：" + msg);
                 });
 
                 redis.Subscribe("PTR", msg =>
                 {
                     mail6.ptrRulseMailAlert(msg);
-                    Console.WriteLine("PRR：" + msg);
+                    //FileLog.WriteLog("PTR：" + msg);
                 });
 
                 redis.Subscribe("ECID", msg =>
                 {
                     mail6.ecidRulseMailAlert(msg);
-                    Console.WriteLine("ECID：" + msg);
+                    //FileLog.WriteLog("ECID：" + msg);
+                });
+
+                redis.Subscribe("ECIDWAFER", msg =>
+                {
+                    mail6.ecidWaferRulseMailAlert(msg);
+                    //FileLog.WriteLog("ECIDWAFER：" + msg);
                 });
 
                 Console.ReadKey();
