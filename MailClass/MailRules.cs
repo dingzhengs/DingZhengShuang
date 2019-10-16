@@ -39,6 +39,12 @@ namespace MailConsole
                     string unlockrole = "";
                     string unlockbm = "";
                     string handle_name = "";
+                    string eqpid = value.EQPTID.ToString();
+                    if (eqpid == "" || eqpid == null)
+                    {
+                        ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                        eqpid = ocmd.ExecuteScalar()?.ToString();
+                    }
 
                     try
                     {
@@ -63,16 +69,16 @@ namespace MailConsole
                     FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
                     if (value.ISSTOP.ToString() == "1")
                     {
-                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                         Hashtable pars = new Hashtable();
                         pars["key"] = Webkey();
                         pars["userId"] = "shuxi_newserver";
-                        pars["eqptId"] = value.EQPTID;
+                        pars["eqptId"] = eqpid;
                         pars["type"] = handle_name;
                         pars["lotId"] = "";
                         pars["Formname"] = "";
                         pars["Stepname"] = "";
-                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
                         stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                         FileLog.WriteLog("PRR停机返回值:" + stop);
 
@@ -82,7 +88,7 @@ namespace MailConsole
                             try
                             {
                                 FileLog.WriteLog("---触发插表---");
-                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{value.EQPTID}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate)", conn);
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
                                 int res = ocmd.ExecuteNonQuery();
                                 FileLog.WriteLog("插库反馈：" + res);
                             }
@@ -96,7 +102,7 @@ namespace MailConsole
                     try
                     {
                         MailSender mail = new MailSender();
-                        recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
                         switch (type)
@@ -290,6 +296,13 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     string unlockrole = "";
                     string unlockbm = "";
                     string handle_name = "";
+                    string count = "";
+                    string eqpid = value.EQPTID.ToString();
+                    if (eqpid == "" || eqpid == null)
+                    {
+                        ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                        eqpid = ocmd.ExecuteScalar()?.ToString();
+                    }
 
                     try
                     {
@@ -322,16 +335,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         //DataTable dt_StopHandler = ds_StopHandler.Tables[0];
                         //if (dt_StopHandler.Rows.Count > 0)
                         //{
-                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                        FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                         Hashtable pars = new Hashtable();
                         pars["key"] = Webkey();
                         pars["userId"] = "shuxi_newserver";
-                        pars["eqptId"] = value.EQPTID;
+                        pars["eqptId"] = eqpid;
                         pars["type"] = handle_name;
                         pars["lotId"] = "";
                         pars["Formname"] = "";
                         pars["Stepname"] = "";
-                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                        FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
                         stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                         FileLog.WriteLog("PRR停机返回值:" + stop);
 
@@ -341,7 +354,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                             try
                             {
                                 FileLog.WriteLog("---触发插表---");
-                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{value.EQPTID}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate)", conn);
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
                                 int res = ocmd.ExecuteNonQuery();
                                 FileLog.WriteLog("插库反馈：" + res);
                             }
@@ -356,7 +369,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     try
                     {
                         MailSender mail = new MailSender();
-                        recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
                         switch (type)
@@ -516,6 +529,112 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mail.Send(mailTitle, mailBody);
 
                                 break;
+
+                            case "PTSADDTRIGGER":
+                                ocmd = new OracleCommand(@"select count from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                                count = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:',count,'" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_PTSADDTRIGGER = new OracleDataAdapter(ocmd);
+                                DataSet dt_PTSADDTRIGGER = new DataSet();
+                                oda_PTSADDTRIGGER.Fill(dt_PTSADDTRIGGER);
+                                DataTable ds_PTSADDTRIGGER = dt_PTSADDTRIGGER.Tables[0];
+
+                                mailBody = ds_PTSADDTRIGGER.Rows[0][0].ToString() + "," + ds_PTSADDTRIGGER.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_PTSADDTRIGGER.Rows[0][2].ToString() + "<br/>";
+                                string[] sArray = ds_PTSADDTRIGGER.Rows[0][4].ToString().Split(',');
+                                mailBody += "TouchDown=" + count + " LowLimit=" + sArray[0] + " HighLimit=" + sArray[sArray.Length - 1] + " site=" + value.SITENUM + "<br/>";
+                                for (int i = 0; i < sArray.Length; i++)
+                                {
+                                    mailBody += "Unit" + (i + 1).ToString() + "=" + sArray[i] + "<br/>";
+                                }
+                                mail.Send(mailTitle, mailBody);
+
+                                break;
+
+                            case "PTSCUTTRIGGER":
+                                ocmd = new OracleCommand(@"select count from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                                count = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:',count,'" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_PTSCUTTRIGGER = new OracleDataAdapter(ocmd);
+                                DataSet dt_PTSCUTTRIGGER = new DataSet();
+                                oda_PTSCUTTRIGGER.Fill(dt_PTSCUTTRIGGER);
+                                DataTable ds_PTSCUTTRIGGER = dt_PTSCUTTRIGGER.Tables[0];
+
+                                mailBody = ds_PTSCUTTRIGGER.Rows[0][0].ToString() + "," + ds_PTSCUTTRIGGER.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_PTSCUTTRIGGER.Rows[0][2].ToString() + "<br/>";
+                                string[] ptscuttriggerArray = ds_PTSCUTTRIGGER.Rows[0][4].ToString().Split(',');
+                                mailBody += "TouchDown=" + count + " LowLimit=" + ptscuttriggerArray[0] + " HighLimit=" + ptscuttriggerArray[ptscuttriggerArray.Length - 1] + " site=" + value.SITENUM + "<br/>";
+                                for (int i = 0; i < ptscuttriggerArray.Length; i++)
+                                {
+                                    mailBody += "Unit" + (i + 1).ToString() + "=" + ptscuttriggerArray[i] + "<br/>";
+                                }
+                                mail.Send(mailTitle, mailBody);
+
+                                break;
+
+                            case "OSPINCOUNTTRIGGER":
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_OSPINCOUNTTRIGGER = new OracleDataAdapter(ocmd);
+                                DataSet dt_OSPINCOUNTTRIGGER = new DataSet();
+                                oda_OSPINCOUNTTRIGGER.Fill(dt_OSPINCOUNTTRIGGER);
+                                DataTable ds_OSPINCOUNTTRIGGER = dt_OSPINCOUNTTRIGGER.Tables[0];
+
+                                mailBody = ds_OSPINCOUNTTRIGGER.Rows[0][0].ToString() + "," + ds_OSPINCOUNTTRIGGER.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_OSPINCOUNTTRIGGER.Rows[0][2].ToString() + "<br/>";
+                                string[] OSPINCOUNTTRIGGERArray = ds_OSPINCOUNTTRIGGER.Rows[0][3].ToString().Split(',');
+                                mailBody += "site=" + value.PARTID + "<br/>";
+                                for (int i = 0; i < OSPINCOUNTTRIGGERArray.Length; i++)
+                                {
+                                    mailBody += OSPINCOUNTTRIGGERArray[i] + "<br/>";
+                                }
+                                mail.Send(mailTitle, mailBody);
+
+                                break;
+
+                            case "OSPINCONSECUTIVETRIGGER":
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_OSPINCONSECUTIVETRIGGER = new OracleDataAdapter(ocmd);
+                                DataSet dt_OSPINCONSECUTIVETRIGGER = new DataSet();
+                                oda_OSPINCONSECUTIVETRIGGER.Fill(dt_OSPINCONSECUTIVETRIGGER);
+                                DataTable ds_OSPINCONSECUTIVETRIGGER = dt_OSPINCONSECUTIVETRIGGER.Tables[0];
+
+                                mailBody = ds_OSPINCONSECUTIVETRIGGER.Rows[0][0].ToString() + "," + ds_OSPINCONSECUTIVETRIGGER.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_OSPINCONSECUTIVETRIGGER.Rows[0][2].ToString() + "<br/>";
+                                string[] OSPINCONSECUTIVETRIGGERArray = ds_OSPINCONSECUTIVETRIGGER.Rows[0][3].ToString().Split(',');
+                                mailBody += "site=" + (Convert.ToDouble(value.PARTID) - 1).ToString() + "<br/>";
+                                for (int i = 0; i < OSPINCONSECUTIVETRIGGERArray.Length; i++)
+                                {
+                                    mailBody += OSPINCONSECUTIVETRIGGERArray[i] + "<br/>";
+                                }
+                                mail.Send(mailTitle, mailBody);
+
+                                break;
                         }
                     }
                     catch (Exception ex)
@@ -545,6 +664,12 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 string unlockbm = "";
                 string handle_name = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
+                string eqpid = value.EQPTID.ToString();
+                if (eqpid == "" || eqpid == null)
+                {
+                    ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                    eqpid = ocmd.ExecuteScalar()?.ToString();
+                }
 
                 try
                 {
@@ -566,11 +691,11 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
 
-                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID + "；EQPNAME：" + value.NODENAM);
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid + "；EQPNAME：" + value.NODENAM);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
                 pars["userId"] = "shuxi_newserver";
-                pars["eqptId"] = value.EQPTID;
+                pars["eqptId"] = eqpid;
                 pars["type"] = handle_name;
                 pars["lotId"] = "";
                 pars["Formname"] = "";
@@ -584,7 +709,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     try
                     {
                         FileLog.WriteLog("---触发插表---");
-                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{value.EQPTID}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate)", conn);
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
                         int res = ocmd.ExecuteNonQuery();
                         FileLog.WriteLog("插库反馈：" + res);
                     }
@@ -598,7 +723,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 {
 
                     MailSender mail = new MailSender();
-                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -636,10 +761,11 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 string unlockbm = "";
                 string handle_name = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
-
-                if (value.STDFID.ToString() == "15161")
+                string eqpid = value.EQPTID.ToString();
+                if (eqpid == "" || eqpid == null)
                 {
-                    return;
+                    ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                    eqpid = ocmd.ExecuteScalar()?.ToString();
                 }
 
                 try
@@ -662,16 +788,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
 
-                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
                 pars["userId"] = "shuxi_newserver";
-                pars["eqptId"] = value.EQPTID;
+                pars["eqptId"] = eqpid;
                 pars["type"] = handle_name;
                 pars["lotId"] = "";
                 pars["Formname"] = "";
                 pars["Stepname"] = "";
-                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
                 string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                 FileLog.WriteLog("ECID停机返回值:" + stop);
 
@@ -681,7 +807,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     try
                     {
                         FileLog.WriteLog("---触发插表---");
-                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{value.EQPTID}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate)", conn);
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
                         int res = ocmd.ExecuteNonQuery();
                         FileLog.WriteLog("插库反馈：" + res);
                     }
@@ -695,8 +821,8 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 {
 
                     MailSender mail = new MailSender();
-                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
-                    //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;jiangtao@cj-elec.com";
+                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                    //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;tdas_it.list@cj-elec.com";
                     //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
@@ -735,6 +861,12 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 string type = "";
                 string unlockbm = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
+                string eqpid = value.EQPTID.ToString();
+                if (eqpid == "" || eqpid == null)
+                {
+                    ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                    eqpid = ocmd.ExecuteScalar()?.ToString();
+                }
 
                 try
                 {
@@ -754,16 +886,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
 
-                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPTID);
+                FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                 //Hashtable pars = new Hashtable();
                 //pars["key"] = Webkey();
                 //pars["userId"] = "shuxi_newserver";
-                //pars["eqptId"] = value.EQPTID;
+                //pars["eqptId"] = eqpid;
                 //pars["type"] = type;
                 //pars["lotId"] = "";
                 //pars["Formname"] = "";
                 //pars["Stepname"] = "";
-                //FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + value.EQPTID);
+                //FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
                 //string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
                 //FileLog.WriteLog("ECID停机返回值:" + stop);
 
@@ -773,7 +905,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 //    try
                 //    {
                 //        FileLog.WriteLog("---触发插表---");
-                //        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{value.EQPTID}','{type}','{unlockrole}','{unlockbm}','0',sysdate)", conn);
+                //        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{type}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
                 //        int res = ocmd.ExecuteNonQuery();
                 //        FileLog.WriteLog("插库反馈：" + res);
                 //    }
@@ -787,7 +919,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                 {
 
                     MailSender mail = new MailSender();
-                    recevicer = "jiangtao@cj-elec.com;" + recevicer;
+                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -887,7 +1019,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             public string REMARK { get; set; }
             public string EQPTID { get; set; }
             public string ISSTOP { get; set; }
-
+            public string PARTID { get; set; }
         }
     }
 }
