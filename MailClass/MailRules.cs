@@ -369,6 +369,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     try
                     {
                         MailSender mail = new MailSender();
+                        //recevicer = "jun.lai@cj-elec.com;kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com";
                         recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
@@ -602,7 +603,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 mailBody = ds_OSPINCOUNTTRIGGER.Rows[0][0].ToString() + "," + ds_OSPINCOUNTTRIGGER.Rows[0][1].ToString() + "<br/>";
                                 mailBody += ds_OSPINCOUNTTRIGGER.Rows[0][2].ToString() + "<br/>";
                                 string[] OSPINCOUNTTRIGGERArray = ds_OSPINCOUNTTRIGGER.Rows[0][3].ToString().Split(',');
-                                mailBody += "site=" + value.PARTID + "<br/>";
+                                mailBody += "Unit=" + value.SITENUM + " Site =" + value.PARTID + "<br/>";
                                 for (int i = 0; i < OSPINCOUNTTRIGGERArray.Length; i++)
                                 {
                                     mailBody += OSPINCOUNTTRIGGERArray[i] + "<br/>";
@@ -627,7 +628,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 mailBody = ds_OSPINCONSECUTIVETRIGGER.Rows[0][0].ToString() + "," + ds_OSPINCONSECUTIVETRIGGER.Rows[0][1].ToString() + "<br/>";
                                 mailBody += ds_OSPINCONSECUTIVETRIGGER.Rows[0][2].ToString() + "<br/>";
                                 string[] OSPINCONSECUTIVETRIGGERArray = ds_OSPINCONSECUTIVETRIGGER.Rows[0][3].ToString().Split(',');
-                                mailBody += "site=" + (Convert.ToDouble(value.PARTID) - 1).ToString() + "<br/>";
+                                mailBody += "Unit="+ value.SITENUM + " Site=" + (Convert.ToDouble(value.PARTID) - 1).ToString() + "<br/>";
                                 for (int i = 0; i < OSPINCONSECUTIVETRIGGERArray.Length; i++)
                                 {
                                     mailBody += OSPINCONSECUTIVETRIGGERArray[i] + "<br/>";
