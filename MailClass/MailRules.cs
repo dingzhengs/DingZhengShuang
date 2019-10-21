@@ -861,6 +861,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 string unlockrole = "";
                 string type = "";
                 string unlockbm = "";
+                string handle_name = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
                 string eqpid = value.EQPTID.ToString();
                 if (eqpid == "" || eqpid == null)
@@ -881,6 +882,8 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     unlockrole = ocmd.ExecuteScalar()?.ToString();
                     ocmd = new OracleCommand(@"select UNLOCKBM from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                     unlockbm = ocmd.ExecuteScalar()?.ToString();
+                    ocmd = new OracleCommand(@"select name from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                    handle_name = ocmd.ExecuteScalar()?.ToString();
                 }
                 catch (Exception ex)
                 {
@@ -888,33 +891,33 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 }
 
                 FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
-                //Hashtable pars = new Hashtable();
-                //pars["key"] = Webkey();
-                //pars["userId"] = "shuxi_newserver";
-                //pars["eqptId"] = eqpid;
-                //pars["type"] = type;
-                //pars["lotId"] = "";
-                //pars["Formname"] = "";
-                //pars["Stepname"] = "";
-                //FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                //string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                //FileLog.WriteLog("ECID停机返回值:" + stop);
+                Hashtable pars = new Hashtable();
+                pars["key"] = Webkey();
+                pars["userId"] = "shuxi_newserver";
+                pars["eqptId"] = eqpid;
+                pars["type"] = handle_name;
+                pars["lotId"] = "";
+                pars["Formname"] = "";
+                pars["Stepname"] = "";
+                FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
+                string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                FileLog.WriteLog("ECIDAKJ停机返回值:" + stop);
 
-                ////锁机成功插入数据，方便前台解锁
-                //if (stop.Contains("Y"))
-                //{
-                //    try
-                //    {
-                //        FileLog.WriteLog("---触发插表---");
-                //        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{type}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                //        int res = ocmd.ExecuteNonQuery();
-                //        FileLog.WriteLog("插库反馈：" + res);
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                //    }
-                //}
+                //锁机成功插入数据，方便前台解锁
+                if (stop.Contains("Y"))
+                {
+                    try
+                    {
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                    }
+                }
 
                 try
                 {
