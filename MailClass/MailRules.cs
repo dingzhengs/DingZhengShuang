@@ -108,7 +108,7 @@ namespace MailConsole
                         switch (type)
                         {
                             case "BINCOUNTTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
                                 //                                mailTitle = dmgr.ExecuteScalar(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
@@ -140,7 +140,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "SITETOSITEYIELDTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -174,7 +174,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "CONSECUTIVEBINTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -199,69 +199,6 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
                                 break;
 
-                            case "PARAMETRICTESTSTATISTICTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
-
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:',
-'LowLimit='||case t1.minstatus when '0' then t1.minvalue when '1' then t1.minvalue||'%' else 'null' end  ||
-' HighLimit='||case t1.maxstatus when '0' then t1.maxvalue when '1' then t1.maxvalue||'%' else 'null' end ||
-' site='||'" + value.SITENUM + @"'||' value='||'" + value.REMARK + @"',
-'MAX_site=null MAX_value=null MIN_site=null MIN_value=null GAP=null'
-from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
-
-                                OracleDataAdapter oda_PARAMETRICTESTSTATISTICTRIGGER = new OracleDataAdapter(ocmd);
-                                DataSet dt_PARAMETRICTESTSTATISTICTRIGGER = new DataSet();
-                                oda_PARAMETRICTESTSTATISTICTRIGGER.Fill(dt_PARAMETRICTESTSTATISTICTRIGGER);
-                                DataTable ds_PARAMETRICTESTSTATISTICTRIGGER = dt_PARAMETRICTESTSTATISTICTRIGGER.Tables[0];
-
-                                //DataTable ds_PARAMETRICTESTSTATISTICTRIGGER = dmgr.ExecuteDataTable();
-
-                                mailBody = ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][0].ToString() + "," + ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][2].ToString() + "<br/>";
-                                mailBody += ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][3].ToString() + "<br/>";
-                                mailBody += ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][4].ToString();
-
-                                mail.Send(mailTitle, mailBody);
-
-                                break;
-
-                            case "SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
-
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:',
-'LowLimit='||case t1.minstatus when '0' then t1.minvalue when '1' then t1.minvalue||'%' else 'null' end  ||
-' HighLimit='||case t1.maxstatus when '0' then t1.maxvalue when '1' then t1.maxvalue||'%' else 'null' end ||
-' site='||'" + value.SITENUM + @"'||' value='||
-to_char((to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1),0))-
-to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1),0))),'fm999990.0000000000'),
-'MAX_site='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,3)+1,instr('" + value.REMARK + @"',',',1,3)-instr('" + value.REMARK + @"','=',1,3)-1)||
-' MAX_value='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1)||
-' MIN_site='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,4)+1,instr('" + value.REMARK + @"',',',1,4)-instr('" + value.REMARK + @"','=',1,4)-1)||
-' MIN_value='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1)||
-' GAP='||
-to_char((to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1),0))-
-to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1),0))),'fm999990.0000000000')
-from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
-
-                                OracleDataAdapter oda_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER = new OracleDataAdapter(ocmd);
-                                DataSet dt_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER = new DataSet();
-                                oda_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Fill(dt_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER);
-                                DataTable ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER = dt_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Tables[0];
-
-                                mailBody = ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][0].ToString() + "," + ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][2].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][3].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][4].ToString();
-
-                                mail.Send(mailTitle, mailBody);
-
-                                break;
                         }
                     }
                     catch (Exception ex)
@@ -376,7 +313,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         switch (type)
                         {
                             case "BINCOUNTTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
                                 //                                mailTitle = dmgr.ExecuteScalar(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
@@ -408,7 +345,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "SITETOSITEYIELDTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -442,7 +379,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "CONSECUTIVEBINTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -468,7 +405,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "PARAMETRICTESTSTATISTICTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -497,7 +434,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 break;
 
                             case "SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -535,7 +472,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 ocmd = new OracleCommand(@"select count from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                                 count = ocmd.ExecuteScalar()?.ToString();
 
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -563,7 +500,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 ocmd = new OracleCommand(@"select count from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                                 count = ocmd.ExecuteScalar()?.ToString();
 
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -588,7 +525,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 break;
 
                             case "OSPINCOUNTTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -613,7 +550,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 break;
 
                             case "OSPINCONSECUTIVETRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                                 mailTitle = ocmd.ExecuteScalar()?.ToString();
 
@@ -731,7 +668,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     //                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
                     //from (select * from v_eq_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                     //                    mailTitle = ocmd.ExecuteScalar()?.ToString();
-                    mailTitle = "Pause Production_ECID_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+                    mailTitle = "Pause Production_ECID_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.FLOWID + "_" + value.NODENAM + "_" + value.DATETIME;
 
                     mailBody = value.DATETIME + ",Pause Production" + "<br/>";
                     mailBody += "[ECID|JCET_ECID_" + value.PARTTYP + "]" + "<br/>";
@@ -831,7 +768,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     //ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
                     //from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                     //mailTitle = ocmd.ExecuteScalar()?.ToString();
-                    mailTitle = "Pause Production_ECIDWAFER_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+                    mailTitle = "Pause Production_ECIDWAFER_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.FLOWID + "_" + value.NODENAM + "_" + value.DATETIME;
 
 
                     mailBody = value.DATETIME + ",Pause Production" + "<br/>";
@@ -930,7 +867,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     //                    ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.NODENAM + @"'||'_'||'" + value.DATETIME + @"'
                     //from (select * from v_eq_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
                     //                    mailTitle = ocmd.ExecuteScalar()?.ToString();
-                    mailTitle = "Pause Production_ECIDWAFER-AKJ_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.NODENAM + "_" + value.DATETIME;
+                    mailTitle = "Pause Production_ECIDWAFER-AKJ_" + value.PARTTYP + "_" + value.LOTID + "_" + value.TESTCOD + "_" + value.SBLOTID + "_" + value.FLOWID + "_" + value.NODENAM + "_" + value.DATETIME;
 
 
                     mailBody = value.DATETIME + ",Pause Production" + "<br/>";
