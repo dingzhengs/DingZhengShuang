@@ -74,33 +74,41 @@ namespace MailConsole
                         int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
                         if (jscc_count > 0)
                         {
-                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
+                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPNAME);
                             Hashtable jscc_pars = new Hashtable();
                             jscc_pars["key"] = Webkey();
                             jscc_pars["userId"] = "shuxi_newserver";
-                            jscc_pars["eqptId"] = eqpid;
+                            jscc_pars["eqptId"] = value.EQPNAME;
                             jscc_pars["type"] = handle_name;
                             jscc_pars["lotId"] = "";
                             jscc_pars["Formname"] = "";
                             jscc_pars["Stepname"] = "";
-                            stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
-                            FileLog.WriteLog("PRR停机返回值:" + stop);
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
+                                FileLog.WriteLog("PRR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PRR停机失败反馈：" + ex.Message.ToString());
+                            }
 
                             //锁机成功插入数据，方便前台解锁
-                            if (stop.Contains("Y"))
+                            try
                             {
-                                try
-                                {
-                                    FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                                    int res = ocmd.ExecuteNonQuery();
-                                    FileLog.WriteLog("插库反馈：" + res);
-                                }
-                                catch (Exception ex)
-                                {
-                                    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                }
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{value.EQPNAME}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
                             }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                            }
+                            //if (stop.Contains("Y"))
+                            //{
+
+                            //}
                         }
                         else
                         {
@@ -114,23 +122,27 @@ namespace MailConsole
                             pars["Formname"] = "";
                             pars["Stepname"] = "";
                             FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                            stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                            FileLog.WriteLog("PRR停机返回值:" + stop);
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                                FileLog.WriteLog("PRR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PRR停机失败反馈：" + ex.Message.ToString());
+                            }
 
                             //锁机成功插入数据，方便前台解锁
-                            if (stop.Contains("Y"))
+                            try
                             {
-                                try
-                                {
-                                    FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                                    int res = ocmd.ExecuteNonQuery();
-                                    FileLog.WriteLog("插库反馈：" + res);
-                                }
-                                catch (Exception ex)
-                                {
-                                    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                }
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                             }
                         }
                     }
@@ -305,32 +317,36 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
                         if (jscc_count > 0)
                         {
-                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
+                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPNAME);
                             Hashtable jscc_pars = new Hashtable();
                             jscc_pars["key"] = Webkey();
                             jscc_pars["userId"] = "shuxi_newserver";
-                            jscc_pars["eqptId"] = eqpid;
+                            jscc_pars["eqptId"] = value.EQPNAME;
                             jscc_pars["type"] = handle_name;
                             jscc_pars["lotId"] = "";
                             jscc_pars["Formname"] = "";
                             jscc_pars["Stepname"] = "";
-                            stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
-                            FileLog.WriteLog("PRR停机返回值:" + stop);
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
+                                FileLog.WriteLog("PTR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PTR停机失败反馈：" + ex.Message.ToString());
+                            }
 
                             //锁机成功插入数据，方便前台解锁
-                            if (stop.Contains("Y"))
+                            try
                             {
-                                try
-                                {
-                                    FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                                    int res = ocmd.ExecuteNonQuery();
-                                    FileLog.WriteLog("插库反馈：" + res);
-                                }
-                                catch (Exception ex)
-                                {
-                                    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                }
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{value.EQPNAME}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                             }
                         }
                         else
@@ -345,23 +361,27 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                             pars["Formname"] = "";
                             pars["Stepname"] = "";
                             FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                            stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                            FileLog.WriteLog("PRR停机返回值:" + stop);
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                                FileLog.WriteLog("PTR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PTR停机失败反馈：" + ex.Message.ToString());
+                            }
 
                             //锁机成功插入数据，方便前台解锁
-                            if (stop.Contains("Y"))
+                            try
                             {
-                                try
-                                {
-                                    FileLog.WriteLog("---触发插表---");
-                                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                                    int res = ocmd.ExecuteNonQuery();
-                                    FileLog.WriteLog("插库反馈：" + res);
-                                }
-                                catch (Exception ex)
-                                {
-                                    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                }
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                             }
                         }
                     }
@@ -636,6 +656,26 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 mail.Send(mailTitle, mailBody);
 
                                 break;
+
+                            case "SPEC0-250":
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_SPEC = new OracleDataAdapter(ocmd);
+                                DataSet dt_SPEC = new DataSet();
+                                oda_SPEC.Fill(dt_SPEC);
+                                DataTable ds_SPEC = dt_SPEC.Tables[0];
+
+                                mailBody = ds_SPEC.Rows[0][0].ToString() + "," + ds_SPEC.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_SPEC.Rows[0][2].ToString() + "<br/>";
+                                mailBody += "site=" + value.SITENUM + " value="+ ds_SPEC.Rows[0][3].ToString() + "<br/>";
+                                mail.Send(mailTitle, mailBody);
+
+                                break;
                         }
                     }
                     catch (Exception ex)
@@ -664,6 +704,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 string unlockrole = "";
                 string unlockbm = "";
                 string handle_name = "";
+                string jscc_stop = "";
                 var value = JToken.Parse(result).ToObject<dynamic>();
                 string eqpid = value.EQPTID.ToString();
                 if (eqpid == "" || eqpid == null)
@@ -701,28 +742,32 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     Hashtable jscc_pars = new Hashtable();
                     jscc_pars["key"] = Webkey();
                     jscc_pars["userId"] = "shuxi_newserver";
-                    jscc_pars["eqptId"] = eqpid;
+                    jscc_pars["eqptId"] = value.NODENAM;
                     jscc_pars["type"] = handle_name;
                     jscc_pars["lotId"] = "";
                     jscc_pars["Formname"] = "";
                     jscc_pars["Stepname"] = "";
-                    string jscc_stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
-                    FileLog.WriteLog("ECID停机返回值:" + jscc_stop);
+                    try
+                    {
+                        jscc_stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
+                        FileLog.WriteLog("ECID停机返回值:" + jscc_stop);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("ECID停机失败反馈：" + ex.Message.ToString());
+                    }
 
                     //锁机成功插入数据，方便前台解锁
-                    if (jscc_stop.Contains("Y"))
+                    try
                     {
-                        try
-                        {
-                            FileLog.WriteLog("---触发插表---");
-                            ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{jscc_stop}')", conn);
-                            int res = ocmd.ExecuteNonQuery();
-                            FileLog.WriteLog("插库反馈：" + res);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                        }
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{value.NODENAM}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{jscc_stop}')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                     }
                 }
                 else
@@ -736,23 +781,28 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     pars["lotId"] = "";
                     pars["Formname"] = "";
                     pars["Stepname"] = "";
-                    string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                    FileLog.WriteLog("ECID停机返回值:" + stop);
+                    string stop = "";
+                    try
+                    {
+                        stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                        FileLog.WriteLog("ECID停机返回值:" + stop);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("ECID停机失败反馈：" + ex.Message.ToString());
+                    }
 
                     //锁机成功插入数据，方便前台解锁
-                    if (stop.Contains("Y"))
+                    try
                     {
-                        try
-                        {
-                            FileLog.WriteLog("---触发插表---");
-                            ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                            int res = ocmd.ExecuteNonQuery();
-                            FileLog.WriteLog("插库反馈：" + res);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                        }
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                     }
                 }
                 try
@@ -833,29 +883,34 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     Hashtable jscc_pars = new Hashtable();
                     jscc_pars["key"] = Webkey();
                     jscc_pars["userId"] = "shuxi_newserver";
-                    jscc_pars["eqptId"] = eqpid;
+                    jscc_pars["eqptId"] = value.NODENAM;
                     jscc_pars["type"] = handle_name;
                     jscc_pars["lotId"] = "";
                     jscc_pars["Formname"] = "";
                     jscc_pars["Stepname"] = "";
                     FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                    string jscc_stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
-                    FileLog.WriteLog("ECID停机返回值:" + jscc_stop);
+                    string jscc_stop = "";
+                    try
+                    {
+                        jscc_stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
+                        FileLog.WriteLog("ECIDWAFER停机返回值:" + jscc_stop);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("ECIDWAFER停机失败反馈：" + ex.Message.ToString());
+                    }
 
                     //锁机成功插入数据，方便前台解锁
-                    if (jscc_stop.Contains("Y"))
+                    try
                     {
-                        try
-                        {
-                            FileLog.WriteLog("---触发插表---");
-                            ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{jscc_stop}')", conn);
-                            int res = ocmd.ExecuteNonQuery();
-                            FileLog.WriteLog("插库反馈：" + res);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                        }
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{value.NODENAM}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{jscc_stop}')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                     }
                 }
                 else
@@ -870,23 +925,28 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     pars["Formname"] = "";
                     pars["Stepname"] = "";
                     FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                    string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                    FileLog.WriteLog("ECID停机返回值:" + stop);
+                    string stop = "";
+                    try
+                    {
+                        stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                        FileLog.WriteLog("ECIDWAFER停机返回值:" + stop);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("ECIDWAFER停机失败反馈：" + ex.Message.ToString());
+                    }
 
                     //锁机成功插入数据，方便前台解锁
-                    if (stop.Contains("Y"))
+                    try
                     {
-                        try
-                        {
-                            FileLog.WriteLog("---触发插表---");
-                            ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                            int res = ocmd.ExecuteNonQuery();
-                            FileLog.WriteLog("插库反馈：" + res);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                        }
+                        FileLog.WriteLog("---触发插表---");
+                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                        int res = ocmd.ExecuteNonQuery();
+                        FileLog.WriteLog("插库反馈：" + res);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                     }
                 }
                 try
@@ -971,23 +1031,28 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 pars["Formname"] = "";
                 pars["Stepname"] = "";
                 FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
-                string stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
-                FileLog.WriteLog("ECIDAKJ停机返回值:" + stop);
+                string stop = "";
+                try
+                {
+                    stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                    FileLog.WriteLog("ECIDAKJ停机返回值:" + stop);
+                }
+                catch (Exception ex)
+                {
+                    FileLog.WriteLog("ECIDAKJ停机失败反馈：" + ex.Message.ToString());
+                }
 
                 //锁机成功插入数据，方便前台解锁
-                if (stop.Contains("Y"))
+                try
                 {
-                    try
-                    {
-                        FileLog.WriteLog("---触发插表---");
-                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
-                        int res = ocmd.ExecuteNonQuery();
-                        FileLog.WriteLog("插库反馈：" + res);
-                    }
-                    catch (Exception ex)
-                    {
-                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                    }
+                    FileLog.WriteLog("---触发插表---");
+                    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.NODENAM}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                    int res = ocmd.ExecuteNonQuery();
+                    FileLog.WriteLog("插库反馈：" + res);
+                }
+                catch (Exception ex)
+                {
+                    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
                 }
 
                 try
@@ -1015,6 +1080,168 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 {
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
+            }
+        }
+
+        public void touchdownRulseMailAlert(string ptr_result)
+        {
+            try
+            {
+                using (OracleConnection conn = new OracleConnection(dmgr.ConnectionString))
+                {
+                    conn.Open();
+                    OracleCommand ocmd;
+                    PTR_RESULT value = JToken.Parse(ptr_result).ToObject<PTR_RESULT>();
+
+                    FileLog.WriteLog("ptr_result:" + ptr_result);
+                    string mailTitle = "";
+                    string mailBody = "";
+                    string type = "";
+                    string recevicer = "";
+                    string stop = "";
+                    string unlockrole = "";
+                    string unlockbm = "";
+                    string handle_name = "";
+                    string eqpid = value.EQPTID.ToString();
+                    if (eqpid == "" || eqpid == null)
+                    {
+                        ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                        eqpid = ocmd.ExecuteScalar()?.ToString();
+                    }
+
+                    try
+                    {
+                        ocmd = new OracleCommand(@"select type from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        type = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select mail_list from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        recevicer = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select unlockrole from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        unlockrole = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select UNLOCKBM from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        unlockbm = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select name from sys_rules_testrun where guid='" + value.GUID + "'", conn);
+                        handle_name = ocmd.ExecuteScalar()?.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog(ex.Message + ex.StackTrace);
+                    }
+
+                    FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
+                    if (value.ISSTOP.ToString() == "1")
+                    {
+                        //如果是JSCC的停机
+                        ocmd = new OracleCommand(@"select count(*) from sys_eqp_group where eqp_name='" + value.EQPNAME + "' and device_group='JSCC'", conn);
+                        int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
+                        if (jscc_count > 0)
+                        {
+                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + value.EQPNAME);
+                            Hashtable jscc_pars = new Hashtable();
+                            jscc_pars["key"] = Webkey();
+                            jscc_pars["userId"] = "shuxi_newserver";
+                            jscc_pars["eqptId"] = value.EQPNAME;
+                            jscc_pars["type"] = handle_name;
+                            jscc_pars["lotId"] = "";
+                            jscc_pars["Formname"] = "";
+                            jscc_pars["Stepname"] = "";
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://10.20.32.114:10086/JSCC_CIM_INTERFACE/CIM_FT_Interface.asmx/lockEqptByTypeWithkey", jscc_pars);
+                                FileLog.WriteLog("PTR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PTR停机失败反馈：" + ex.Message.ToString());
+                            }
+
+                            //锁机成功插入数据，方便前台解锁
+                            try
+                            {
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{value.EQPNAME}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                            }
+                        }
+                        else
+                        {
+                            FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
+                            Hashtable pars = new Hashtable();
+                            pars["key"] = Webkey();
+                            pars["userId"] = "shuxi_newserver";
+                            pars["eqptId"] = eqpid;
+                            pars["type"] = handle_name;
+                            pars["lotId"] = "";
+                            pars["Formname"] = "";
+                            pars["Stepname"] = "";
+                            FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
+                            try
+                            {
+                                stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                                FileLog.WriteLog("PTR停机返回值:" + stop);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("PTR停机失败反馈：" + ex.Message.ToString());
+                            }
+
+                            //锁机成功插入数据，方便前台解锁
+                            try
+                            {
+                                FileLog.WriteLog("---触发插表---");
+                                ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                                int res = ocmd.ExecuteNonQuery();
+                                FileLog.WriteLog("插库反馈：" + res);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                            }
+                        }
+                    }
+
+                    try
+                    {
+                        MailSender mail = new MailSender();
+                        //recevicer = "jun.lai@cj-elec.com;kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com";
+                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                        string[] recevicerList = recevicer.Split(';');
+                        mail.AddTo(recevicerList);
+
+                        ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                        mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                        ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:',
+'TouchDown=1  Site='||'" + value.SITENUM + @"'
+from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                        OracleDataAdapter oda_BINCOUNTTRIGGER = new OracleDataAdapter(ocmd);
+                        DataSet dt_BINCOUNTTRIGGER = new DataSet();
+                        oda_BINCOUNTTRIGGER.Fill(dt_BINCOUNTTRIGGER);
+                        DataTable ds_BINCOUNTTRIGGER = dt_BINCOUNTTRIGGER.Tables[0];
+
+                        mailBody = ds_BINCOUNTTRIGGER.Rows[0][0].ToString() + "," + ds_BINCOUNTTRIGGER.Rows[0][1].ToString() + "<br/>";
+                        mailBody += ds_BINCOUNTTRIGGER.Rows[0][2].ToString() + "<br/>";
+                        mailBody += ds_BINCOUNTTRIGGER.Rows[0][3].ToString();
+
+                        mail.Send(mailTitle, mailBody);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog(ex.Message + ex.StackTrace);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLog.WriteLog(ex.Message + ex.StackTrace);
             }
         }
 

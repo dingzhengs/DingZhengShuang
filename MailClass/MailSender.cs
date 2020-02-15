@@ -8,9 +8,12 @@ namespace Twinkle.Framework.Utilities
 {
     public class MailSender
     {
-        string account = "jcet_admin_b2b_d02@cj-elec.com";
-        string password = "spc123456!";
-        string smtp = "smtp.cj-elec.com";
+        string account = System.Configuration.ConfigurationManager.AppSettings["account"];
+        string password = System.Configuration.ConfigurationManager.AppSettings["password"];
+        string smtp = System.Configuration.ConfigurationManager.AppSettings["smtp"];
+        //string account = "jcet_admin_b2b_d02@cj-elec.com";
+        //string password = "spc123456!";
+        //string smtp = "smtp.cj-elec.com";
         bool ssl = false;
         int port = 25;
         string displayName = "测试项目组";
