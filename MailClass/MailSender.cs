@@ -10,44 +10,62 @@ namespace Twinkle.Framework.Utilities
     {
         string account = System.Configuration.ConfigurationManager.AppSettings["account"];
         string password = System.Configuration.ConfigurationManager.AppSettings["password"];
+        string account_jscc = System.Configuration.ConfigurationManager.AppSettings["account_jscc"];
+        string password_jscc = System.Configuration.ConfigurationManager.AppSettings["password_jscc"];
         string smtp = System.Configuration.ConfigurationManager.AppSettings["smtp"];
-        //string account = "jcet_admin_b2b_d02@cj-elec.com";
-        //string password = "spc123456!";
-        //string smtp = "smtp.cj-elec.com";
-        bool ssl = false;
-        int port = 25;
+        int port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["port"]);
+        //string account = "jcet_test_cj01@jcetglobal.com";
+        //string password = "BR8KB@YMJDj";
+        //string smtp = "smtp.partner.outlook.cn";
+        //int port = 587;
+        bool ssl = true;
         string displayName = "测试项目组";
 
         SmtpClient smtpClient;
         MailMessage mailMessage;
-        public MailSender()
+        public MailSender(string type)
         {
-            InitClient();
+            InitClient(type);
         }
 
         //初始化客户端信息
-        private void InitClient()
+        private void InitClient(string type)
         {
-            smtpClient = new SmtpClient();
+            smtpClient = new SmtpClient(smtp);
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.Host = smtp;
+            //smtpClient.Host = smtp;
             smtpClient.Port = port;
-            smtpClient.Credentials = new NetworkCredential(account, password);//用户名和密码
             smtpClient.EnableSsl = ssl;
-            mailMessage = new MailMessage
+            if (type == "jscc")
             {
-                From = new MailAddress(account, displayName),
-                BodyEncoding= Encoding.Default,
-                IsBodyHtml = true,
-                Priority = MailPriority.Normal
-            };
+                smtpClient.Credentials = new NetworkCredential(account_jscc, password_jscc);//用户名和密码
+                mailMessage = new MailMessage
+                {
+                    From = new MailAddress(account_jscc, displayName),
+                    BodyEncoding = System.Text.Encoding.UTF8,
+                    IsBodyHtml = true,
+                    Priority = MailPriority.Normal
+                };
+            }
+            else
+            {
+                smtpClient.Credentials = new NetworkCredential(account, password);//用户名和密码
+                mailMessage = new MailMessage
+                {
+                    From = new MailAddress(account, displayName),
+                    BodyEncoding = System.Text.Encoding.UTF8,
+                    IsBodyHtml = true,
+                    Priority = MailPriority.Normal
+                };
+            }
+             
         }
 
         /// <summary>
         /// 添加收件人邮箱
         /// </summary>
         /// <param name="tos"></param>
-        public void AddTo(string [] tos)
+        public void AddTo(string[] tos)
         {
             foreach (var to in tos)
             {
@@ -79,14 +97,14 @@ namespace Twinkle.Framework.Utilities
             }
         }
 
-       
+
         /// <summary>
         /// 发送邮件
         /// </summary>
         /// <param name="subject">邮件标题</param>
         /// <param name="body">邮件正文</param>
         /// <returns></returns>
-        public Task Send(string subject,string body)
+        public Task SendTask(string subject, string body)
         {
 
             mailMessage.Subject = subject;
@@ -100,6 +118,24 @@ namespace Twinkle.Framework.Utilities
             catch (Exception ex)
             {
 
+                throw;
+            }
+        }
+
+
+        public void Send(string subject, string body)
+        {
+
+            mailMessage.Subject = subject;
+
+            mailMessage.Body = body;
+
+            try
+            {
+                smtpClient.Send(mailMessage);
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }

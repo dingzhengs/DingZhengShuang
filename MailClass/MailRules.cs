@@ -149,8 +149,18 @@ namespace MailConsole
 
                     try
                     {
-                        MailSender mail = new MailSender();
-                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                        MailSender mail = new MailSender("");
+                        ocmd = new OracleCommand(@"select count(*) from sys_eqp_group where eqp_name='" + value.EQPNAME + "' and device_group='JSCC'", conn);
+                        int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
+                        if (jscc_count > 0)
+                        {
+                            mail = new MailSender("jscc");
+                        }
+                        else
+                        {
+                            mail = new MailSender("");
+                        }
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
                         switch (type)
@@ -388,105 +398,23 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
                     try
                     {
-                        MailSender mail = new MailSender();
-                        //recevicer = "jun.lai@cj-elec.com;kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com";
-                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                        MailSender mail = new MailSender("");
+                        ocmd = new OracleCommand(@"select count(*) from sys_eqp_group where eqp_name='" + value.EQPNAME + "' and device_group='JSCC'", conn);
+                        int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
+                        if (jscc_count > 0)
+                        {
+                            mail = new MailSender("jscc");
+                        }
+                        else
+                        {
+                            mail = new MailSender("");
+                        }
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
                         switch (type)
                         {
-                            case "BINCOUNTTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
-                                //                                mailTitle = dmgr.ExecuteScalar(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-                                //from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ").ToString();
-
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:',
-'LowLimit=null HighLimit='||case when count is not null then
-case t1.counttype when '0' then t1.count when '1' then t1.count||'%' else 'null' end 
-when maxvalue is not null then
-case t1.maxstatus when '0' then t1.maxvalue when '1' then t1.maxvalue||'%' else 'null' end 
-when minvalue is not null then
-case t1.minstatus when '0' then t1.minvalue when '1' then t1.minvalue||'%' else 'null' end  end ||
-' site='||'" + value.SITENUM + @"'||' value='||'" + value.REMARK + @"',
-'MAX_site=null MAX_value=null MIN_site=null MIN_value=null GAP=null'
-from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
-
-                                OracleDataAdapter oda_BINCOUNTTRIGGER = new OracleDataAdapter(ocmd);
-                                DataSet dt_BINCOUNTTRIGGER = new DataSet();
-                                oda_BINCOUNTTRIGGER.Fill(dt_BINCOUNTTRIGGER);
-                                DataTable ds_BINCOUNTTRIGGER = dt_BINCOUNTTRIGGER.Tables[0];
-
-                                mailBody = ds_BINCOUNTTRIGGER.Rows[0][0].ToString() + "," + ds_BINCOUNTTRIGGER.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_BINCOUNTTRIGGER.Rows[0][2].ToString() + "<br/>";
-                                mailBody += ds_BINCOUNTTRIGGER.Rows[0][3].ToString() + "<br/>";
-                                mailBody += ds_BINCOUNTTRIGGER.Rows[0][4].ToString();
-
-                                mail.Send(mailTitle, mailBody);
-                                break;
-
-                            case "SITETOSITEYIELDTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
-
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:',
-'LowLimit=null HighLimit='||case t1.counttype when '0' then t1.count when '1' then t1.count||'%' else 'null' end ||
-' site='||'" + value.SITENUM + @"'||' value='||to_char(((to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1),0))-
-to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1),0))))*100,'fm999990.0000000000')||'%',
-'MAX_site='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,3)+1,instr('" + value.REMARK + @"',',',1,3)-instr('" + value.REMARK + @"','=',1,3)-1)||
-' MAX_value='||to_number(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1))*100||'%'||
-' MIN_site='||substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,4)+1,instr('" + value.REMARK + @"',',',1,4)-instr('" + value.REMARK + @"','=',1,4)-1)||
-' MIN_value='||to_number(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1))*100||'%'||
-' GAP='||to_char(((to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,1)+1,instr('" + value.REMARK + @"',',',1,1)-instr('" + value.REMARK + @"','=',1,1)-1),0))-
-to_number(NVL(substr('" + value.REMARK + @"',instr('" + value.REMARK + @"','=',1,2)+1,instr('" + value.REMARK + @"',',',1,2)-instr('" + value.REMARK + @"','=',1,2)-1),0))))*100,'fm999990.0000000000')||'%'
-from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
-
-                                OracleDataAdapter oda_SITETOSITEYIELDTRIGGER = new OracleDataAdapter(ocmd);
-                                DataSet dt_SITETOSITEYIELDTRIGGER = new DataSet();
-                                oda_SITETOSITEYIELDTRIGGER.Fill(dt_SITETOSITEYIELDTRIGGER);
-                                DataTable ds_SITETOSITEYIELDTRIGGER = dt_SITETOSITEYIELDTRIGGER.Tables[0];
-
-                                //DataTable ds_SITETOSITEYIELDTRIGGER = dmgr.ExecuteDataTable();
-
-                                mailBody = ds_SITETOSITEYIELDTRIGGER.Rows[0][0].ToString() + "," + ds_SITETOSITEYIELDTRIGGER.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEYIELDTRIGGER.Rows[0][2].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEYIELDTRIGGER.Rows[0][3].ToString() + "<br/>";
-                                mailBody += ds_SITETOSITEYIELDTRIGGER.Rows[0][4].ToString();
-
-                                mail.Send(mailTitle, mailBody);
-
-                                break;
-
-                            case "CONSECUTIVEBINTRIGGER":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
-
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:',
-'LowLimit=null HighLimit='||case t1.counttype when '0' then t1.count when '1' then t1.count||'%' else 'null' end ||
-' site='||'" + value.SITENUM + @"'||' value='||'" + value.REMARK + @"',
-'MAX_site=null MAX_value=null MIN_site=null MIN_value=null GAP=null'
-from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
-
-                                OracleDataAdapter oda_CONSECUTIVEBINTRIGGER = new OracleDataAdapter(ocmd);
-                                DataSet dt_CONSECUTIVEBINTRIGGER = new DataSet();
-                                oda_CONSECUTIVEBINTRIGGER.Fill(dt_CONSECUTIVEBINTRIGGER);
-                                DataTable ds_CONSECUTIVEBINTRIGGER = dt_CONSECUTIVEBINTRIGGER.Tables[0];
-
-                                mailBody = ds_CONSECUTIVEBINTRIGGER.Rows[0][0].ToString() + "," + ds_CONSECUTIVEBINTRIGGER.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_CONSECUTIVEBINTRIGGER.Rows[0][2].ToString() + "<br/>";
-                                mailBody += ds_CONSECUTIVEBINTRIGGER.Rows[0][3].ToString() + "<br/>";
-                                mailBody += ds_CONSECUTIVEBINTRIGGER.Rows[0][4].ToString();
-
-                                mail.Send(mailTitle, mailBody);
-
-                                break;
-
                             case "PARAMETRICTESTSTATISTICTRIGGER":
                                 ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
 from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
@@ -657,25 +585,25 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
 
                                 break;
 
-                            case "SPEC0-250":
-                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+//                            case "SPEC0-250":
+//                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+//from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+//                                mailTitle = ocmd.ExecuteScalar()?.ToString();
 
-                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+//                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+//'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
-                                OracleDataAdapter oda_SPEC = new OracleDataAdapter(ocmd);
-                                DataSet dt_SPEC = new DataSet();
-                                oda_SPEC.Fill(dt_SPEC);
-                                DataTable ds_SPEC = dt_SPEC.Tables[0];
+//                                OracleDataAdapter oda_SPEC = new OracleDataAdapter(ocmd);
+//                                DataSet dt_SPEC = new DataSet();
+//                                oda_SPEC.Fill(dt_SPEC);
+//                                DataTable ds_SPEC = dt_SPEC.Tables[0];
 
-                                mailBody = ds_SPEC.Rows[0][0].ToString() + "," + ds_SPEC.Rows[0][1].ToString() + "<br/>";
-                                mailBody += ds_SPEC.Rows[0][2].ToString() + "<br/>";
-                                mailBody += "site=" + value.SITENUM + " value="+ ds_SPEC.Rows[0][3].ToString() + "<br/>";
-                                mail.Send(mailTitle, mailBody);
+//                                mailBody = ds_SPEC.Rows[0][0].ToString() + "," + ds_SPEC.Rows[0][1].ToString() + "<br/>";
+//                                mailBody += ds_SPEC.Rows[0][2].ToString() + "<br/>";
+//                                mailBody += "site=" + value.SITENUM + " value=" + ds_SPEC.Rows[0][3].ToString() + "<br/>";
+//                                mail.Send(mailTitle, mailBody);
 
-                                break;
+//                                break;
                         }
                     }
                     catch (Exception ex)
@@ -807,9 +735,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 }
                 try
                 {
-
-                    MailSender mail = new MailSender();
-                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                    MailSender mail = new MailSender("");
+                    if (jscc_count > 0)
+                    {
+                        mail = new MailSender("jscc");
+                    }
+                    else
+                    {
+                        mail = new MailSender("");
+                    }
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -951,9 +886,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 }
                 try
                 {
-
-                    MailSender mail = new MailSender();
-                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                    MailSender mail = new MailSender("");
+                    if (jscc_count > 0)
+                    {
+                        mail = new MailSender("jscc");
+                    }
+                    else
+                    {
+                        mail = new MailSender("");
+                    }
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
                     //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;tdas_it.list@cj-elec.com";
                     //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
@@ -1057,9 +999,8 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
 
                 try
                 {
-
-                    MailSender mail = new MailSender();
-                    recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                    MailSender mail = new MailSender("");
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -1206,9 +1147,18 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
 
                     try
                     {
-                        MailSender mail = new MailSender();
-                        //recevicer = "jun.lai@cj-elec.com;kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com";
-                        recevicer = "tdas_it.list@cj-elec.com;" + recevicer;
+                        MailSender mail = new MailSender("");
+                        ocmd = new OracleCommand(@"select count(*) from sys_eqp_group where eqp_name='" + value.EQPNAME + "' and device_group='JSCC'", conn);
+                        int jscc_count = Convert.ToInt32(ocmd.ExecuteScalar());
+                        if (jscc_count > 0)
+                        {
+                            mail = new MailSender("jscc");
+                        }
+                        else
+                        {
+                            mail = new MailSender("");
+                        }
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
 

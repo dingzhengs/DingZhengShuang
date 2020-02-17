@@ -28,31 +28,40 @@ namespace MailConsole
                 MailRules mail6 = new MailRules();
                 RedisService redis = new RedisService();
 
-                redis.Subscribe("PRR", msg =>
-                {
-                    mail6.prrRulseMailAlert(msg);
-                    //FileLog.WriteLog("PRR：" + msg);
-                });
+                //MailHelper mail1 = new MailHelper();
+                //mail1.testSend();
 
-                redis.Subscribe("PTR", msg =>
-                {
-                    mail6.ptrRulseMailAlert(msg);
-                    //FileLog.WriteLog("PTR：" + msg);
-                });
+                MailSender mail = new MailSender("jscc");
+                string recevicer = "tdas_pro@cj-elec.com";
+                string[] recevicerList = recevicer.Split(';');
+                mail.AddTo(recevicerList);
+                mail.Send("测试邮件主题", "测试邮件内容");
 
-                redis.Subscribe("ECID", msg =>
-                {
-                    mail6.ecidRulseMailAlert(msg);
-                    //FileLog.WriteLog("ECID：" + msg);
-                });
+                //redis.Subscribe("PRR", msg =>
+                //{
+                //    mail6.prrRulseMailAlert(msg);
+                //    //FileLog.WriteLog("PRR：" + msg);
+                //});
 
-                redis.Subscribe("ECIDWAFER", msg =>
-                {
-                    mail6.ecidWaferRulseMailAlert(msg);
-                    //FileLog.WriteLog("ECIDWAFER：" + msg);
-                });
+                //redis.Subscribe("PTR", msg =>
+                //{
+                //    mail6.ptrRulseMailAlert(msg);
+                //    //FileLog.WriteLog("PTR：" + msg);
+                //});
 
-                Console.ReadKey();
+                //redis.Subscribe("ECID", msg =>
+                //{
+                //    mail6.ecidRulseMailAlert(msg);
+                //    //FileLog.WriteLog("ECID：" + msg);
+                //});
+
+                //redis.Subscribe("ECIDWAFER", msg =>
+                //{
+                //    mail6.ecidWaferRulseMailAlert(msg);
+                //    //FileLog.WriteLog("ECIDWAFER：" + msg);
+                //});
+
+                //Console.ReadKey();
             }
             catch (Exception ex)
             {
