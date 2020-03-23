@@ -39,6 +39,7 @@ namespace MailConsole
                     string unlockrole = "";
                     string unlockbm = "";
                     string handle_name = "";
+                    string sublot = "";
                     string eqpid = value.EQPTID.ToString();
                     if (eqpid == "" || eqpid == null)
                     {
@@ -60,6 +61,9 @@ namespace MailConsole
                         unlockbm = ocmd.ExecuteScalar()?.ToString();
                         ocmd = new OracleCommand(@"select name from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         handle_name = ocmd.ExecuteScalar()?.ToString();
+
+                        ocmd = new OracleCommand(@"select sblotid from mir where stdfid='" + value.STDFID + "'", conn);
+                        sublot = ocmd.ExecuteScalar()?.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -80,7 +84,7 @@ namespace MailConsole
                             jscc_pars["userId"] = "shuxi_newserver";
                             jscc_pars["eqptId"] = value.EQPNAME;
                             jscc_pars["type"] = handle_name;
-                            jscc_pars["lotId"] = "";
+                            jscc_pars["lotId"] = sublot;
                             jscc_pars["Formname"] = "";
                             jscc_pars["Stepname"] = "";
                             try
@@ -292,6 +296,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     string unlockbm = "";
                     string handle_name = "";
                     string count = "";
+                    string sublot = "";
                     string eqpid = value.EQPTID.ToString();
                     if (eqpid == "" || eqpid == null)
                     {
@@ -313,6 +318,8 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         unlockbm = ocmd.ExecuteScalar()?.ToString();
                         ocmd = new OracleCommand(@"select name from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         handle_name = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select sblotid from mir where stdfid='" + value.STDFID + "'", conn);
+                        sublot = ocmd.ExecuteScalar()?.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -333,7 +340,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                             jscc_pars["userId"] = "shuxi_newserver";
                             jscc_pars["eqptId"] = value.EQPNAME;
                             jscc_pars["type"] = handle_name;
-                            jscc_pars["lotId"] = "";
+                            jscc_pars["lotId"] = sublot;
                             jscc_pars["Formname"] = "";
                             jscc_pars["Stepname"] = "";
                             try
@@ -672,7 +679,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     jscc_pars["userId"] = "shuxi_newserver";
                     jscc_pars["eqptId"] = value.NODENAM;
                     jscc_pars["type"] = handle_name;
-                    jscc_pars["lotId"] = "";
+                    jscc_pars["lotId"] = value.SBLOTID;
                     jscc_pars["Formname"] = "";
                     jscc_pars["Stepname"] = "";
                     try
@@ -820,7 +827,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     jscc_pars["userId"] = "shuxi_newserver";
                     jscc_pars["eqptId"] = value.NODENAM;
                     jscc_pars["type"] = handle_name;
-                    jscc_pars["lotId"] = "";
+                    jscc_pars["lotId"] = value.SBLOTID;
                     jscc_pars["Formname"] = "";
                     jscc_pars["Stepname"] = "";
                     FileLog.WriteLog("key:" + Webkey() + ",eqptid:" + eqpid);
@@ -1043,6 +1050,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     string unlockrole = "";
                     string unlockbm = "";
                     string handle_name = "";
+                    string sublot = "";
                     string eqpid = value.EQPTID.ToString();
                     if (eqpid == "" || eqpid == null)
                     {
@@ -1062,6 +1070,8 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                         unlockbm = ocmd.ExecuteScalar()?.ToString();
                         ocmd = new OracleCommand(@"select name from sys_rules_testrun where guid='" + value.GUID + "'", conn);
                         handle_name = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select sblotid from mir where stdfid='" + value.STDFID + "'", conn);
+                        sublot = ocmd.ExecuteScalar()?.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -1082,7 +1092,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                             jscc_pars["userId"] = "shuxi_newserver";
                             jscc_pars["eqptId"] = value.EQPNAME;
                             jscc_pars["type"] = handle_name;
-                            jscc_pars["lotId"] = "";
+                            jscc_pars["lotId"] = sublot;
                             jscc_pars["Formname"] = "";
                             jscc_pars["Stepname"] = "";
                             try
