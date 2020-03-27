@@ -20,6 +20,7 @@ namespace MailConsole
         MailHelper mailHelper = new MailHelper();
         DatabaseManager dmgr = new DatabaseManager("oracle");
         DateTime sendTime = DateTime.MinValue;
+        MailKitHelper mailkit = new MailKitHelper();
 
         public void prrRulseMailAlert(string prr_result)
         {
@@ -198,7 +199,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mailBody += ds_BINCOUNTTRIGGER.Rows[0][3].ToString() + "<br/>";
                                 mailBody += ds_BINCOUNTTRIGGER.Rows[0][4].ToString();
 
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
                                 break;
 
                             case "SITETOSITEYIELDTRIGGER":
@@ -231,7 +241,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mailBody += ds_SITETOSITEYIELDTRIGGER.Rows[0][3].ToString() + "<br/>";
                                 mailBody += ds_SITETOSITEYIELDTRIGGER.Rows[0][4].ToString();
 
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -257,7 +276,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mailBody += ds_CONSECUTIVEBINTRIGGER.Rows[0][3].ToString() + "<br/>";
                                 mailBody += ds_CONSECUTIVEBINTRIGGER.Rows[0][4].ToString();
 
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -278,6 +306,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
         public void ptrRulseMailAlert(string ptr_result)
         {
+
             try
             {
                 using (OracleConnection conn = new OracleConnection(dmgr.ConnectionString))
@@ -447,8 +476,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mailBody += ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][3].ToString() + "<br/>";
                                 mailBody += ds_PARAMETRICTESTSTATISTICTRIGGER.Rows[0][4].ToString();
 
-                                mail.Send(mailTitle, mailBody);
-
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
                                 break;
 
                             case "SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER":
@@ -482,7 +519,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 mailBody += ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][3].ToString() + "<br/>";
                                 mailBody += ds_SITETOSITEPARAMETRICTESTSTATISTICDELTATRIGGER.Rows[0][4].ToString();
 
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -510,7 +556,17 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 {
                                     mailBody += "Unit" + (i + 1).ToString() + "=" + sArray[i] + "<br/>";
                                 }
-                                mail.Send(mailTitle, mailBody);
+
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -538,7 +594,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 {
                                     mailBody += "Unit" + (i + 1).ToString() + "=" + ptscuttriggerArray[i] + "<br/>";
                                 }
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -563,7 +628,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 {
                                     mailBody += OSPINCOUNTTRIGGERArray[i] + "<br/>";
                                 }
-                                mail.Send(mailTitle, mailBody);
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
 
                                 break;
 
@@ -588,29 +662,60 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                                 {
                                     mailBody += OSPINCONSECUTIVETRIGGERArray[i] + "<br/>";
                                 }
+                                try
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件...");
+                                    mail.Send(mailTitle, mailBody);
+                                }
+                                catch (Exception)
+                                {
+                                    FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody);
+                                }
+
+                                break;
+
+                            case "SIGMATRIGGER":
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+
+                                OracleDataAdapter oda_sigma = new OracleDataAdapter(ocmd);
+                                DataSet dt_sigma = new DataSet();
+                                oda_sigma.Fill(dt_sigma);
+                                DataTable ds_sigma = dt_sigma.Tables[0];
+
+                                mailBody = ds_sigma.Rows[0][0].ToString() + "," + ds_sigma.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_sigma.Rows[0][2].ToString() + "<br/>";
+                                mailBody += "site=" + value.SITENUM + " value=" + ds_sigma.Rows[0][3].ToString() + "<br/>";
                                 mail.Send(mailTitle, mailBody);
 
                                 break;
 
-//                            case "SPEC0-250":
-//                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
-//from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
-//                                mailTitle = ocmd.ExecuteScalar()?.ToString();
+                            case "PTRCONSECUTIVEBINTRIGGER":
+                                ocmd = new OracleCommand(@"select t1.action||'_'||t1.type||'_'||t1.product||'_'||t2.lotid||'_'||t2.testcod||'_'||t2.sblotid||'_'||substr(t2.FLOWID,0,2)||'_'||'" + value.EQPNAME + @"'||'_'||'" + value.DATETIME + @"'
+from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(select * from mir where stdfid='" + value.STDFID + "') t2 ", conn);
+                                mailTitle = ocmd.ExecuteScalar()?.ToString();
 
-//                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
-//'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
+                                ocmd = new OracleCommand(@"select '" + value.DATETIME + @"',t1.action,
+'['||t1.type||'/'||t1.name||']:','" + value.REMARK + @"' from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
 
-//                                OracleDataAdapter oda_SPEC = new OracleDataAdapter(ocmd);
-//                                DataSet dt_SPEC = new DataSet();
-//                                oda_SPEC.Fill(dt_SPEC);
-//                                DataTable ds_SPEC = dt_SPEC.Tables[0];
+                                OracleDataAdapter oda_SPEC = new OracleDataAdapter(ocmd);
+                                DataSet dt_SPEC = new DataSet();
+                                oda_SPEC.Fill(dt_SPEC);
+                                DataTable ds_SPEC = dt_SPEC.Tables[0];
 
-//                                mailBody = ds_SPEC.Rows[0][0].ToString() + "," + ds_SPEC.Rows[0][1].ToString() + "<br/>";
-//                                mailBody += ds_SPEC.Rows[0][2].ToString() + "<br/>";
-//                                mailBody += "site=" + value.SITENUM + " value=" + ds_SPEC.Rows[0][3].ToString() + "<br/>";
-//                                mail.Send(mailTitle, mailBody);
+                                mailBody = ds_SPEC.Rows[0][0].ToString() + "," + ds_SPEC.Rows[0][1].ToString() + "<br/>";
+                                mailBody += ds_SPEC.Rows[0][2].ToString() + "<br/>";
+                                mailBody += "site=" + value.SITENUM + " value=" + ds_SPEC.Rows[0][3].ToString() + "<br/>";
+                                mail.Send(mailTitle, mailBody);
 
-//                                break;
+                                break;
+
+                                
                         }
                     }
                     catch (Exception ex)
@@ -764,7 +869,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += "[ECID|JCET_ECID_" + value.PARTTYP + "]" + "<br/>";
                     mailBody += value.RESULT + "<br/>";
                     mailBody += value.REFS;
-                    mail.Send(mailTitle, mailBody);
+                    try
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件...");
+                        mail.Send(mailTitle, mailBody);
+                    }
+                    catch (Exception)
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                        mailkit.Send(recevicerList, mailTitle, mailBody);
+                    }
 
                 }
                 catch (Exception ex)
@@ -918,7 +1032,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += "[ECIDWAFER|JCET_ECIDWAFER_" + value.PARTTYP + "]" + "<br/>";
                     mailBody += value.REFS + "<br/>";
                     mailBody += value.RESULT;
-                    mail.Send(mailTitle, mailBody);
+                    try
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件...");
+                        mail.Send(mailTitle, mailBody);
+                    }
+                    catch (Exception)
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                        mailkit.Send(recevicerList, mailTitle, mailBody);
+                    }
 
                 }
                 catch (Exception ex)
@@ -1021,7 +1144,16 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += "[ECIDWAFER-AKJ|JCET_ECIDWAFER-AKJ_" + value.PARTTYP + "]" + "<br/>";
                     mailBody += value.REFS + "<br/>";
                     mailBody += value.RESULT;
-                    mail.Send(mailTitle, mailBody);
+                    try
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件...");
+                        mail.Send(mailTitle, mailBody);
+                    }
+                    catch (Exception)
+                    {
+                        FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                        mailkit.Send(recevicerList, mailTitle, mailBody);
+                    }
 
                 }
                 catch (Exception ex)
@@ -1190,7 +1322,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         mailBody += ds_BINCOUNTTRIGGER.Rows[0][2].ToString() + "<br/>";
                         mailBody += ds_BINCOUNTTRIGGER.Rows[0][3].ToString();
 
-                        mail.Send(mailTitle, mailBody);
+                        try
+                        {
+                            FileLog.WriteLog("使用C#SMTP发送邮件...");
+                            mail.Send(mailTitle, mailBody);
+                        }
+                        catch (Exception)
+                        {
+                            FileLog.WriteLog("使用C#SMTP发送邮件发送失败，换用mailkit发送邮件");
+                            mailkit.Send(recevicerList, mailTitle, mailBody);
+                        }
 
                     }
                     catch (Exception ex)

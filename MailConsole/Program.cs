@@ -31,11 +31,16 @@ namespace MailConsole
                 //MailHelper mail1 = new MailHelper();
                 //mail1.testSend();
 
-                MailSender mail = new MailSender("jscc");
-                string recevicer = "tdas_pro@cj-elec.com";
+                //MailSender mail = new MailSender("");
+                //string recevicer = "tdas_pro@cj-elec.com";
+                //string[] recevicerList = recevicer.Split(';');
+                //mail.AddTo(recevicerList);
+                //mail.Send("测试邮件主题", "测试邮件内容");
+
+                MailKitHelper mailkit = new MailKitHelper();
+                string recevicer = "tdas_pro@cj-elec.com;zhengshuang.ding@shu-xi.com";
                 string[] recevicerList = recevicer.Split(';');
-                mail.AddTo(recevicerList);
-                mail.Send("测试邮件主题", "测试邮件内容");
+                mailkit.Send("", recevicerList, "mailkit测试邮件主题", "mailkit测试邮件内容");
 
                 //redis.Subscribe("PRR", msg =>
                 //{
