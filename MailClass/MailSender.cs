@@ -8,8 +8,8 @@ namespace Twinkle.Framework.Utilities
 {
     public class MailSender
     {
-        string account = System.Configuration.ConfigurationManager.AppSettings["account"];
-        string password = System.Configuration.ConfigurationManager.AppSettings["password"];
+        string account = System.Configuration.ConfigurationManager.AppSettings["account_bak"];
+        string password = System.Configuration.ConfigurationManager.AppSettings["password_bak"];
         string account_jscc = System.Configuration.ConfigurationManager.AppSettings["account_jscc"];
         string password_jscc = System.Configuration.ConfigurationManager.AppSettings["password_jscc"];
         string smtp = System.Configuration.ConfigurationManager.AppSettings["smtp"];

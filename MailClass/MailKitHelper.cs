@@ -12,16 +12,25 @@ namespace MailClass
 {
     public class MailKitHelper
     {
-        string account_bak = System.Configuration.ConfigurationManager.AppSettings["account_bak"];
-        string password_bak = System.Configuration.ConfigurationManager.AppSettings["password_bak"];
+        string account = System.Configuration.ConfigurationManager.AppSettings["account"];
+        string password = System.Configuration.ConfigurationManager.AppSettings["password"];
+        string account_jscc = System.Configuration.ConfigurationManager.AppSettings["account_jscc"];
+        string password_jscc = System.Configuration.ConfigurationManager.AppSettings["password_jscc"];
         string _smtp = System.Configuration.ConfigurationManager.AppSettings["smtp"];
         int port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["port"]);
 
-        public void Send(string[] tos, string title, string content)
+        public void Send(string[] tos, string title, string content, string type)
         {
 
             var messageToSend = new MimeMessage();
-            messageToSend.Sender = new MailboxAddress("jcet_test_cj01", account_bak);
+            if (type == "jscc")
+            {
+                messageToSend.From.Add(new MailboxAddress("测试项目组", account_jscc));
+            }
+            else
+            {
+                messageToSend.From.Add(new MailboxAddress("测试项目组", account));
+            }
             foreach (var to in tos)
             {
                 messageToSend.To.Add(new MailboxAddress(to, to));
@@ -34,7 +43,14 @@ namespace MailClass
                 try
                 {
                     smtp.Connect(_smtp, port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate(account_bak, password_bak);
+                    if (type == "jscc")
+                    {
+                        smtp.Authenticate(account_jscc, password_jscc);
+                    }
+                    else
+                    {
+                        smtp.Authenticate(account, password);
+                    }
                     smtp.Send(messageToSend);
                     smtp.Disconnect(true);
                 }
