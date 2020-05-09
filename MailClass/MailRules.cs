@@ -31,7 +31,6 @@ namespace MailConsole
                     conn.Open();
                     OracleCommand ocmd;
                     PRR_RESULT value = JToken.Parse(prr_result).ToObject<PRR_RESULT>();
-                    FileLog.WriteLog("prr_result:" + prr_result);
                     string mailTitle = "";
                     string mailBody = "";
                     string type = "";
@@ -79,7 +78,7 @@ namespace MailConsole
                     {
                         return;
                     }
-
+                    FileLog.WriteLog("prr_result:" + prr_result);
                     FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
                     if (value.ISSTOP.ToString() == "1")
                     {
@@ -130,7 +129,7 @@ namespace MailConsole
                         {
                             mail = new MailSender("");
                         }
-                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
                         switch (type)
@@ -322,7 +321,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     OracleCommand ocmd;
                     PTR_RESULT value = JToken.Parse(ptr_result).ToObject<PTR_RESULT>();
 
-                    FileLog.WriteLog("ptr_result:" + ptr_result);
+                    
                     string mailTitle = "";
                     string mailBody = "";
                     string type = "";
@@ -370,7 +369,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     {
                         return;
                     }
-
+                    FileLog.WriteLog("ptr_result:" + ptr_result);
                     FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
                     if (value.ISSTOP.ToString() == "1")
                     {
@@ -409,7 +408,6 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         }
                     }
 
-
                     try
                     {
                         MailSender mail = new MailSender("");
@@ -422,7 +420,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                         {
                             mail = new MailSender("");
                         }
-                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
 
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
@@ -843,7 +841,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                FileLog.WriteLog("ecid:" + result);
+                
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -888,7 +886,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 {
                     return;
                 }
-
+                FileLog.WriteLog("ecid:" + result);
                 FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid + "；EQPNAME：" + value.NODENAM);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
@@ -933,7 +931,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     {
                         mail = new MailSender("");
                     }
-                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -948,22 +946,22 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += value.REFS;
                     try
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件...");
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件...");
                         mailkit.Send(recevicerList, mailTitle, mailBody, mailtype);
 
                     }
                     catch (Exception ex)
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "，错误：" + ex.Message.ToString());
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
+                        FileLog.WriteLog(mailTitle + "，错误：" + ex.Message.ToString());
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
                         try
                         {
                             mail.Send(mailTitle, mailBody);
                         }
                         catch (Exception e)
                         {
-                            FileLog.WriteLog(value.MAILTITLE + "，错误：" + e.Message.ToString());
-                            FileLog.WriteLog(value.MAILTITLE + "：使用C#SMTP发送邮件失败");
+                            FileLog.WriteLog(mailTitle + "，错误：" + e.Message.ToString());
+                            FileLog.WriteLog(mailTitle + "：使用C#SMTP发送邮件失败");
                         }
                     }
 
@@ -981,7 +979,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                FileLog.WriteLog("ecidwafer:" + result);
+                
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -1025,7 +1023,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 {
                     return;
                 }
-
+                FileLog.WriteLog("ecidwafer:" + result);
                 FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
@@ -1072,7 +1070,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     {
                         mail = new MailSender("");
                     }
-                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
                     //recevicer = "kai.guo@shu-xi.com;zhengshuang.ding@shu-xi.com;jun.lai@cj-elec.com;tdas_it.list@cj-elec.com";
                     //recevicer = "zhengshuang.ding@shu-xi.com";
                     string[] recevicerList = recevicer.Split(';');
@@ -1090,22 +1088,22 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += value.RESULT;
                     try
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件...");
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件...");
                         mailkit.Send(recevicerList, mailTitle, mailBody, mailtype);
 
                     }
                     catch (Exception ex)
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "，错误：" + ex.Message.ToString());
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
+                        FileLog.WriteLog(mailTitle + "，错误：" + ex.Message.ToString());
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
                         try
                         {
                             mail.Send(mailTitle, mailBody);
                         }
                         catch (Exception e)
                         {
-                            FileLog.WriteLog(value.MAILTITLE + "，错误：" + e.Message.ToString());
-                            FileLog.WriteLog(value.MAILTITLE + "：使用C#SMTP发送邮件失败");
+                            FileLog.WriteLog(mailTitle + "，错误：" + e.Message.ToString());
+                            FileLog.WriteLog(mailTitle + "：使用C#SMTP发送邮件失败");
                         }
                     }
 
@@ -1123,7 +1121,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                FileLog.WriteLog("ecidwaferakj:" + result);
+                
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -1158,7 +1156,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 {
                     FileLog.WriteLog(ex.Message + ex.StackTrace);
                 }
-
+                FileLog.WriteLog("ecidwaferakj:" + result);
                 FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
                 Hashtable pars = new Hashtable();
                 pars["key"] = Webkey();
@@ -1196,7 +1194,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                 try
                 {
                     MailSender mail = new MailSender("");
-                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                    recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
                     string[] recevicerList = recevicer.Split(';');
                     mail.AddTo(recevicerList);
 
@@ -1212,22 +1210,22 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     mailBody += value.RESULT;
                     try
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件...");
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件...");
                         mailkit.Send(recevicerList, mailTitle, mailBody, "");
 
                     }
                     catch (Exception ex)
                     {
-                        FileLog.WriteLog(value.MAILTITLE + "，错误：" + ex.Message.ToString());
-                        FileLog.WriteLog(value.MAILTITLE + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
+                        FileLog.WriteLog(mailTitle + "，错误：" + ex.Message.ToString());
+                        FileLog.WriteLog(mailTitle + "：使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
                         try
                         {
                             mail.Send(mailTitle, mailBody);
                         }
                         catch (Exception e)
                         {
-                            FileLog.WriteLog(value.MAILTITLE + "，错误：" + e.Message.ToString());
-                            FileLog.WriteLog(value.MAILTITLE + "：使用C#SMTP发送邮件失败");
+                            FileLog.WriteLog(mailTitle + "，错误：" + e.Message.ToString());
+                            FileLog.WriteLog(mailTitle + "：使用C#SMTP发送邮件失败");
                         }
                     }
 
@@ -1249,7 +1247,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     OracleCommand ocmd;
                     PTR_RESULT value = JToken.Parse(ptr_result).ToObject<PTR_RESULT>();
 
-                    FileLog.WriteLog("ptr_result:" + ptr_result);
+                    
                     string mailTitle = "";
                     string mailBody = "";
                     string type = "";
@@ -1294,7 +1292,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     {
                         return;
                     }
-
+                    FileLog.WriteLog("ptr_result:" + ptr_result);
                     FileLog.WriteLog("ISSTOP：" + value.ISSTOP + ",EQPNAME：" + value.EQPNAME);
                     if (value.ISSTOP.ToString() == "1")
                     {
@@ -1346,7 +1344,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                         {
                             mail = new MailSender("");
                         }
-                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;tdas_pro@cj-elec.com;" + recevicer;
+                        recevicer = "JCET_D3_IT_TDAS.LIST@jcetglobal.com;jcet_test_cj03@jcetglobal.com;" + recevicer;
                         string[] recevicerList = recevicer.Split(';');
                         mail.AddTo(recevicerList);
 

@@ -32,13 +32,13 @@ namespace MailConsole
                 //mail1.testSend();
 
                 //MailSender mail = new MailSender("");
-                //string recevicer = "tdas_pro@cj-elec.com";
+                //string recevicer = "jcet_test_cj03@jcetglobal.com";
                 //string[] recevicerList = recevicer.Split(';');
                 //mail.AddTo(recevicerList);
                 //mail.Send("测试邮件主题", "测试邮件内容");
 
                 MailKitHelper mailkit = new MailKitHelper();
-                string recevicer = "tdas_pro@cj-elec.com;zhengshuang.ding@shu-xi.com";
+                string recevicer = "jcet_test_cj03@jcetglobal.com;zhengshuang.ding@shu-xi.com";
                 string[] recevicerList = recevicer.Split(';');
                 mailkit.Send(recevicerList, "mailkit测试邮件主题", "mailkit测试邮件内容");
 

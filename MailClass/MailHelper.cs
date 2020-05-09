@@ -41,7 +41,7 @@ namespace MailClass
 
             ////设置邮件的收件人
 
-            string trueaddress = "tdas_pro@cj-elec.com";
+            string trueaddress = "jcet_test_cj03@jcetglobal.com";
 
             mail.To.Add(new MailAddress(trueaddress));
 
