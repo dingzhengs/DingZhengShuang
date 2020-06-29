@@ -1,12 +1,15 @@
 ﻿using CSRedis;
 using GlobalUtility.Core;
 using MailClass;
+using MailClass.WebServices;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Twinkle.Framework.Utilities;
 
 namespace MailConsole
@@ -37,10 +40,13 @@ namespace MailConsole
                 //mail.AddTo(recevicerList);
                 //mail.Send("测试邮件主题", "测试邮件内容");
 
-                MailKitHelper mailkit = new MailKitHelper();
-                string recevicer = "jcet_test_cj03@jcetglobal.com;zhengshuang.ding@shu-xi.com";
-                string[] recevicerList = recevicer.Split(';');
-                mailkit.Send(recevicerList, "mailkit测试邮件主题", "mailkit测试邮件内容");
+                Hashtable pars = new Hashtable();
+                pars["Lotid"] = "AFY948F043.001";
+                string jobname = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/CIM/Service.asmx/getFTProgram", pars);
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(jobname);
+                String RetXml = doc.InnerText;
+
 
                 //redis.Subscribe("PRR", msg =>
                 //{

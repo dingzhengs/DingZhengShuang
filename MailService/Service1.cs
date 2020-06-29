@@ -63,6 +63,13 @@ namespace MailService
                     mail6.touchdownRulseMailAlert(msg);
                     //FileLog.WriteLog("PRR：" + msg);
                 });
+
+                redis.Subscribe("DIFFJOBNAM", msg =>
+                {
+                    mail6.touchdownDiffJOBNAM(msg);
+                    //FileLog.WriteLog("PRR：" + msg);
+                });
+                
             }
             catch (Exception ex)
             {

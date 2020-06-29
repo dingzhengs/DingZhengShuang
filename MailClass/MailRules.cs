@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections;
 using MailClass.WebServices;
 using Oracle.ManagedDataAccess.Client;
+using System.Xml;
 
 namespace MailConsole
 {
@@ -321,7 +322,7 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                     OracleCommand ocmd;
                     PTR_RESULT value = JToken.Parse(ptr_result).ToObject<PTR_RESULT>();
 
-                    
+
                     string mailTitle = "";
                     string mailBody = "";
                     string type = "";
@@ -841,7 +842,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                
+
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -979,7 +980,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                
+
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -1121,7 +1122,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
             {
                 conn.Open();
                 OracleCommand ocmd;
-                
+
                 string mailTitle = "";
                 string mailBody = "";
                 string recevicer = "";
@@ -1247,7 +1248,7 @@ from (select * from sys_rules_testrun where guid='" + value.GUID + "') t1,(selec
                     OracleCommand ocmd;
                     PTR_RESULT value = JToken.Parse(ptr_result).ToObject<PTR_RESULT>();
 
-                    
+
                     string mailTitle = "";
                     string mailBody = "";
                     string type = "";
@@ -1399,6 +1400,143 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             }
         }
 
+        public void touchdownDiffJOBNAM(string ptr_result)
+        {
+            try
+            {
+                using (OracleConnection conn = new OracleConnection(dmgr.ConnectionString))
+                {
+                    conn.Open();
+                    OracleCommand ocmd;
+                    DIFF_RESULT value = JToken.Parse(ptr_result).ToObject<DIFF_RESULT>();
+
+                    string jobname = "";
+                    string stop = "";
+                    string mailTitle = "";
+                    string mailBody = "";
+                    string recevicer = "";
+                    string unlockrole = "";
+                    string unlockbm = "PTE";
+                    string handle_name = "MES的测试程序名跟MIR里的测试程序名不一致";
+                    string mailtype = "";
+                    string eqpid = value.EQPTID.ToString();
+                    string retXml = "";
+                    //if (eqpid == "" || eqpid == null)
+                    //{
+                    //    ocmd = new OracleCommand(@"select handid from sdr where stdfid='" + value.STDFID + "'", conn);
+                    //    eqpid = ocmd.ExecuteScalar()?.ToString();
+                    //}
+
+                    try
+                    {
+                        ocmd = new OracleCommand(@"select maillist from a_eqpmail where device_group=fun_getplant('" + value.SBLOTID + "','" + value.EQPNAME + "')", conn);
+                        recevicer = ocmd.ExecuteScalar()?.ToString();
+                        ocmd = new OracleCommand(@"select fun_getplant('" + value.SBLOTID + "','" + value.EQPNAME + "') from dual", conn);
+                        unlockrole = ocmd.ExecuteScalar()?.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog(ex.Message + ex.StackTrace);
+                    }
+
+                    if (!unlockrole.Contains("BGA其他"))
+                    {
+                        return;
+                    }
+
+                    try
+                    {
+                        Hashtable par = new Hashtable();
+                        par["Lotid"] = value.SBLOTID;
+                        jobname = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/CIM/Service.asmx/getFTProgram", par);
+                        FileLog.WriteLog("获取Mes程序名:" + jobname);
+                        XmlDocument doc = new XmlDocument();
+                        doc.LoadXml(jobname);
+                        retXml = doc.InnerText;
+                        if (retXml != value.JOBNAM)
+                        {
+                            //FileLog.WriteLog("开始触发停机，key：" + Webkey() + "；eqptId：" + eqpid);
+                            //Hashtable pars = new Hashtable();
+                            //pars["key"] = Webkey();
+                            //pars["userId"] = "shuxi_newserver";
+                            //pars["eqptId"] = eqpid;
+                            //pars["type"] = handle_name;
+                            //pars["lotId"] = "";
+                            //pars["Formname"] = "";
+                            //pars["Stepname"] = "";
+                            //try
+                            //{
+                            //    stop = WebSvcHelper.QueryGetWebService("http://172.17.255.158:3344/mestocim/Service1.asmx/lockEqptByTypeWithkey", pars);
+                            //    FileLog.WriteLog("停机返回值:" + stop);
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
+                            //}
+
+                            ////锁机成功插入数据，方便前台解锁
+                            //try
+                            //{
+                            //    FileLog.WriteLog("---触发插表---");
+                            //    ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,WEBKEY,USERID,EQPTID,TYPE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK) values ('{value.EQPNAME}','{Webkey()}','shuxi_newserver','{eqpid}','{handle_name}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}')", conn);
+                            //    int res = ocmd.ExecuteNonQuery();
+                            //    FileLog.WriteLog("插库反馈：" + res);
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                            //}
+
+                            try
+                            {
+                                MailSender mail = new MailSender("");
+                                string[] recevicerList = recevicer.Split(';');
+                                mail.AddTo(recevicerList);
+
+                                mailTitle = value.MAILTITLE;
+                                mailBody = "MES的测试程序名跟MIR里的测试程序名不一致，MES："+ retXml + ",TDAS："+ value.JOBNAM + "";
+
+                                try
+                                {
+                                    FileLog.WriteLog("使用mailkit发送邮件...");
+                                    mailkit.Send(recevicerList, mailTitle, mailBody, mailtype);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    FileLog.WriteLog("错误：" + ex.Message.ToString());
+                                    FileLog.WriteLog("使用mailkit发送邮件发送失败，换用C#SMTP发送邮件");
+                                    try
+                                    {
+                                        mail.Send(mailTitle, mailBody);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        FileLog.WriteLog("错误：" + e.Message.ToString());
+                                        FileLog.WriteLog("使用C#SMTP发送邮件失败");
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLog.WriteLog(ex.Message + ex.StackTrace);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLog.WriteLog("获取Mes程序名失败：" + ex.Message.ToString());
+                    }
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLog.WriteLog(ex.Message + ex.StackTrace);
+            }
+        }
+
         public string GetHtmlString(DataTable tbl)
         {
             StringBuilder sb = new StringBuilder();
@@ -1477,6 +1615,16 @@ from sys_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
             public string EQPTID { get; set; }
             public string ISSTOP { get; set; }
             public string PARTID { get; set; }
+            public string MAILTITLE { get; set; }
+        }
+
+        public class DIFF_RESULT
+        {
+            public string STDFID { get; set; }
+            public string EQPNAME { get; set; }
+            public string JOBNAM { get; set; }
+            public string SBLOTID { get; set; }
+            public string EQPTID { get; set; }
             public string MAILTITLE { get; set; }
         }
     }
