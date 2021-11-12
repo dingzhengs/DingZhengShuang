@@ -39,9 +39,9 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "邮件发送服务器";
-            this.serviceInstaller1.DisplayName = "预警规则服务";
-            this.serviceInstaller1.ServiceName = "MailService";
+            this.serviceInstaller1.Description = "Rcs邮件发送服务器";
+            this.serviceInstaller1.DisplayName = "Rcs预警规则服务";
+            this.serviceInstaller1.ServiceName = "RcsMailService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

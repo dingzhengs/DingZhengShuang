@@ -8,11 +8,11 @@ namespace Twinkle.Framework.Utilities
 {
     public class MailSender
     {
-        string account = "jcet_admin_b2b_d02@cj-elec.com";
-        string password = "spc123456!";
-        string smtp = "smtp.cj-elec.com";
+        string account = System.Configuration.ConfigurationManager.AppSettings["account"];
+        string password = System.Configuration.ConfigurationManager.AppSettings["password"];
+        string smtp = System.Configuration.ConfigurationManager.AppSettings["smtp"];
+        int port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["port"]);
         bool ssl = false;
-        int port = 25;
         string displayName = "测试项目组";
 
         SmtpClient smtpClient;
@@ -25,16 +25,16 @@ namespace Twinkle.Framework.Utilities
         //初始化客户端信息
         private void InitClient()
         {
-            smtpClient = new SmtpClient();
+            smtpClient = new SmtpClient(smtp);
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.Host = smtp;
+            //smtpClient.Host = smtp;
             smtpClient.Port = port;
-            smtpClient.Credentials = new NetworkCredential(account, password);//用户名和密码
             smtpClient.EnableSsl = ssl;
+            smtpClient.Credentials = new NetworkCredential(account, password);//用户名和密码
             mailMessage = new MailMessage
             {
                 From = new MailAddress(account, displayName),
-                BodyEncoding= Encoding.Default,
+                BodyEncoding = System.Text.Encoding.UTF8,
                 IsBodyHtml = true,
                 Priority = MailPriority.Normal
             };
@@ -44,7 +44,7 @@ namespace Twinkle.Framework.Utilities
         /// 添加收件人邮箱
         /// </summary>
         /// <param name="tos"></param>
-        public void AddTo(string [] tos)
+        public void AddTo(string[] tos)
         {
             foreach (var to in tos)
             {
@@ -76,14 +76,14 @@ namespace Twinkle.Framework.Utilities
             }
         }
 
-       
+
         /// <summary>
         /// 发送邮件
         /// </summary>
         /// <param name="subject">邮件标题</param>
         /// <param name="body">邮件正文</param>
         /// <returns></returns>
-        public Task Send(string subject,string body)
+        public Task SendTask(string subject, string body)
         {
 
             mailMessage.Subject = subject;
@@ -97,6 +97,24 @@ namespace Twinkle.Framework.Utilities
             catch (Exception ex)
             {
 
+                throw;
+            }
+        }
+
+
+        public void Send(string subject, string body)
+        {
+
+            mailMessage.Subject = subject;
+
+            mailMessage.Body = body;
+
+            try
+            {
+                smtpClient.Send(mailMessage);
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }
