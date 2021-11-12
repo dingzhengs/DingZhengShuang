@@ -119,6 +119,7 @@
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="EMailHelper.cs" />
     <Compile Include="FileLog.cs" />
+    <Compile Include="MailKitHelper.cs" />
     <Compile Include="MailHelper.cs" />
     <Compile Include="MailKitHelper.cs" />
     <Compile Include="MailRules.cs" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\CSRedisCore.dll" />
+    <Content Include="lib\jmail.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

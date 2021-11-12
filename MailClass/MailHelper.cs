@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MailClass
 {
@@ -11,6 +14,88 @@ namespace MailClass
         {
             this.mailMessage = new MailMessage();
             this.smtpClient = new SmtpClient();
+        }
+
+        public void testSend()
+        {
+            string newSMTPServer = "smtp.partner.outlook.cn";
+
+            string newMailAccount = string.Empty;
+
+            string newMailPassword = string.Empty;
+
+            newMailAccount = "jcet_test_cj02@jcetglobal.com";
+
+            newMailPassword = "5HD14@aJkye";
+
+            MailAddress from = new MailAddress(newMailAccount, "tester");
+
+            MailMessage mail = new MailMessage();
+
+            //设置邮件的标题
+
+            mail.Subject = "22222";
+
+            mail.From = from;
+
+
+            ////设置邮件的收件人
+
+            string trueaddress = "jcet_test_cj03@jcetglobal.com";
+
+            mail.To.Add(new MailAddress(trueaddress));
+
+
+            mail.Body = "111111111111111111111111111";
+
+            ////设置邮件的内容
+
+            mail.BodyEncoding = System.Text.Encoding.UTF8;
+
+            mail.IsBodyHtml = true;
+
+            ////设置邮件的发送级别
+
+            mail.Priority = MailPriority.Normal;
+
+
+            SmtpClient client = new SmtpClient(newSMTPServer);
+
+            client.Port = 587;
+            client.Credentials = new System.Net.NetworkCredential(newMailAccount, newMailPassword);
+
+
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+
+            client.EnableSsl = true;
+
+            try
+
+            {
+                //Task.Run(() => { client.Send(mail); });
+                client.Send(mail);
+                //client.SendAsync(mail, "userToken");
+
+            }
+
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        private void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                //MessageBox.Show("邮件发送失败，详情：" + e.Error.Message);
+            }
+            else
+            {
+                //MessageBox.Show("邮件发送成功！");
+            }
         }
 
         /// <summary>
