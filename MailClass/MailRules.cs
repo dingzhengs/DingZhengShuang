@@ -212,6 +212,19 @@ namespace MailConsole
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -229,25 +242,13 @@ namespace MailConsole
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
                                     }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
@@ -281,6 +282,19 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -297,26 +311,14 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                     catch (Exception ex)
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
-                                    }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
+                                    } 
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
@@ -350,6 +352,19 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -367,25 +382,13 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
                                     }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
@@ -415,6 +418,19 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -432,25 +448,13 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
                                     }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
@@ -481,6 +485,19 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -498,25 +515,13 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
                                     }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
@@ -547,6 +552,19 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                 //触发停机
                                 if (value.ISSTOP.ToString() == "1")
                                 {
+                                    //锁机成功插入数据，方便前台解锁
+                                    try
+                                    {
+                                        FileLog.WriteLog("---触发插表---");
+                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
+                                        int res = ocmd.ExecuteNonQuery();
+                                        FileLog.WriteLog("插库反馈：" + res);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
+                                    }
+
                                     FileLog.WriteLog("开始触发停机，eqptId：" + value.EQPNAME);
                                     try
                                     {
@@ -563,26 +581,14 @@ from sys_rcs_rules_testrun t1 where t1.guid='" + value.GUID + "'", conn);
                                     catch (Exception ex)
                                     {
                                         FileLog.WriteLog("停机失败反馈：" + ex.Message.ToString());
-                                    }
-
-                                    //锁机成功插入数据，方便前台解锁
-                                    try
-                                    {
-                                        FileLog.WriteLog("---触发插表---");
-                                        ocmd = new OracleCommand($"insert into UNLOCK_EQPT(EQPNAME,USERID,EQPTID,MAILTITLE,ULOCKROLE,UNLOCKBM,STATUS,CREATE_DATE,REMARK,HANDLER_IP,HANDLER_PORT,MAILBODY) values ('{value.EQPNAME}','rtm','{eqpid}','{mailTitle}','{unlockrole}','{unlockbm}','0',sysdate,'{stop}','{handler_ip}','{handler_port}','{mailBody}')", conn);
-                                        int res = ocmd.ExecuteNonQuery();
-                                        FileLog.WriteLog("插库反馈：" + res);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        FileLog.WriteLog("插库反馈：" + ex.Message.ToString());
-                                    }
+                                    } 
                                 }
 
                                 FileLog.WriteLog("用C#SMTP发送邮件");
                                 try
                                 {
                                     mailkit.Send(recevicerList, mailTitle, mailBody);
+                                    FileLog.WriteLog("用C#SMTP发送邮件成功");
                                     //mail.Send(mailTitle, mailBody);
                                 }
                                 catch (Exception e)
